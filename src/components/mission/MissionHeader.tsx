@@ -84,12 +84,14 @@ export function MissionHeader({
   
   return (
     <div className="glass rounded-2xl p-6 md:p-8 mb-6 md:mb-8 relative">
-      <EditMissionDialog 
-        currentStatement={missionStatement}
-        currentVisionGoals={visionGoals}
-        currentIkigaiComponents={ikigaiComponents}
-        onSave={onMissionUpdate}
-      />
+      <div className="absolute top-6 right-6 md:top-8 md:right-8 z-10">
+        <EditMissionDialog 
+          currentStatement={missionStatement}
+          currentVisionGoals={visionGoals}
+          currentIkigaiComponents={ikigaiComponents}
+          onSave={onMissionUpdate}
+        />
+      </div>
       
       <div className="flex flex-col md:flex-row md:items-start md:justify-between mb-4 md:mb-6">
         <div>

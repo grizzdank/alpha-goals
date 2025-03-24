@@ -178,7 +178,7 @@ export function EditMissionDialog({
         <Button
           variant="ghost"
           size="icon"
-          className="absolute top-8 right-8 h-9 w-9 rounded-full bg-background/50 hover:bg-background/80"
+          className="h-9 w-9 rounded-full bg-background/50 hover:bg-background/80"
         >
           <Pencil className="h-4 w-4" />
           <span className="sr-only">Edit mission statement</span>
