@@ -50,7 +50,7 @@ export function MissionContainer() {
   };
   
   return (
-    <div className="max-w-7xl mx-auto animate-fade-in">
+    <div className="w-full mx-auto animate-fade-in">
       <MissionHeader 
         missionStatement={missionStatement}
         visionStatement={visionStatement}

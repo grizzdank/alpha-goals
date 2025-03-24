@@ -7,22 +7,29 @@ import { ThemeToggle } from '@/components/ui/theme-toggle';
 interface NavbarProps {
   title?: string;
   subtitle?: string;
+  children?: React.ReactNode;
 }
 
-export function Navbar({ title = "Mission Planner Pro", subtitle }: NavbarProps) {
+export function Navbar({ title = "Mission Planner Pro", subtitle, children }: NavbarProps) {
   return (
     <header className="sticky top-0 z-20 w-full h-16 bg-white/20 dark:bg-black/20 backdrop-blur-md border-b border-white/20 dark:border-white/10">
-      <div className="flex items-center justify-between h-full px-6">
-        {/* Left side - Title */}
-        <div className="flex flex-col justify-center">
-          <h1 className="text-xl font-semibold tracking-tight">{title}</h1>
-          {subtitle && (
-            <p className="text-sm text-muted-foreground">{subtitle}</p>
-          )}
+      <div className="flex items-center justify-between h-full px-4 md:px-6">
+        {/* Left side - Title and mobile menu */}
+        <div className="flex items-center">
+          {/* Mobile menu trigger */}
+          {children}
+          
+          {/* Title */}
+          <div className="flex flex-col justify-center">
+            <h1 className="text-lg md:text-xl font-semibold tracking-tight">{title}</h1>
+            {subtitle && (
+              <p className="text-xs md:text-sm text-muted-foreground line-clamp-1">{subtitle}</p>
+            )}
+          </div>
         </div>
 
         {/* Right side - Actions */}
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-2 md:space-x-4">
           {/* Theme Toggle */}
           <ThemeToggle />
           
@@ -32,7 +39,7 @@ export function Navbar({ title = "Mission Planner Pro", subtitle }: NavbarProps)
             <input 
               type="text" 
               placeholder="Search..." 
-              className="py-2 pl-9 pr-4 rounded-full bg-white/40 dark:bg-white/10 border border-white/30 dark:border-white/20 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all w-[180px] focus:w-[220px]"
+              className="py-2 pl-9 pr-4 rounded-full bg-white/40 dark:bg-white/10 border border-white/30 dark:border-white/20 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all w-[160px] md:w-[180px] focus:w-[200px] md:focus:w-[220px]"
             />
           </div>
 
