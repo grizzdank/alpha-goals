@@ -7,14 +7,28 @@ import { useIsMobile } from "@/hooks/use-mobile";
 interface MissionHeaderProps {
   missionStatement: string;
   visionStatement: string;
-  purposeStatement: string;
-  onMissionUpdate: (values: { statement: string; vision: string; purpose: string }) => void;
+  ikigaiComponents: {
+    love: string;
+    good: string;
+    paid: string;
+    needs: string;
+  };
+  onMissionUpdate: (values: { 
+    statement: string; 
+    vision: string; 
+    ikigaiComponents: {
+      love: string;
+      good: string;
+      paid: string;
+      needs: string;
+    }
+  }) => void;
 }
 
 export function MissionHeader({
   missionStatement,
   visionStatement,
-  purposeStatement,
+  ikigaiComponents,
   onMissionUpdate,
 }: MissionHeaderProps) {
   const isMobile = useIsMobile();
@@ -24,7 +38,7 @@ export function MissionHeader({
       <EditMissionDialog 
         currentStatement={missionStatement}
         currentVision={visionStatement}
-        currentPurpose={purposeStatement}
+        currentIkigaiComponents={ikigaiComponents}
         onSave={onMissionUpdate}
       />
       
@@ -48,40 +62,39 @@ export function MissionHeader({
         </p>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
         <div className="bg-white/40 rounded-xl p-4 md:p-5 border border-white/30 dark:bg-gray-800/40 dark:border-white/10">
-          <h3 className="font-medium mb-2">Core Values</h3>
-          <ul className="space-y-2">
-            <li className="flex items-center">
-              <div className="h-2 w-2 rounded-full bg-purpose mr-2"></div>
-              <span>Authenticity</span>
-            </li>
-            <li className="flex items-center">
-              <div className="h-2 w-2 rounded-full bg-purpose mr-2"></div>
-              <span>Growth mindset</span>
-            </li>
-            <li className="flex items-center">
-              <div className="h-2 w-2 rounded-full bg-purpose mr-2"></div>
-              <span>Impact-focused</span>
-            </li>
-            <li className="flex items-center">
-              <div className="h-2 w-2 rounded-full bg-purpose mr-2"></div>
-              <span>Balance</span>
-            </li>
-          </ul>
-        </div>
-        
-        <div className="bg-white/40 rounded-xl p-4 md:p-5 border border-white/30 dark:bg-gray-800/40 dark:border-white/10">
-          <h3 className="font-medium mb-2">Vision</h3>
+          <h3 className="font-medium mb-2">What I Love</h3>
           <p className="text-muted-foreground text-sm md:text-base">
-            {visionStatement}
+            {ikigaiComponents.love}
           </p>
         </div>
         
         <div className="bg-white/40 rounded-xl p-4 md:p-5 border border-white/30 dark:bg-gray-800/40 dark:border-white/10">
-          <h3 className="font-medium mb-2">Purpose</h3>
+          <h3 className="font-medium mb-2">What I'm Good At</h3>
           <p className="text-muted-foreground text-sm md:text-base">
-            {purposeStatement}
+            {ikigaiComponents.good}
+          </p>
+        </div>
+        
+        <div className="bg-white/40 rounded-xl p-4 md:p-5 border border-white/30 dark:bg-gray-800/40 dark:border-white/10">
+          <h3 className="font-medium mb-2">What I Can Be Paid For</h3>
+          <p className="text-muted-foreground text-sm md:text-base">
+            {ikigaiComponents.paid}
+          </p>
+        </div>
+        
+        <div className="bg-white/40 rounded-xl p-4 md:p-5 border border-white/30 dark:bg-gray-800/40 dark:border-white/10">
+          <h3 className="font-medium mb-2">What the World Needs</h3>
+          <p className="text-muted-foreground text-sm md:text-base">
+            {ikigaiComponents.needs}
+          </p>
+        </div>
+
+        <div className="bg-white/40 rounded-xl p-4 md:p-5 border border-white/30 dark:bg-gray-800/40 dark:border-white/10 md:col-span-2">
+          <h3 className="font-medium mb-2">Vision</h3>
+          <p className="text-muted-foreground text-sm md:text-base">
+            {visionStatement}
           </p>
         </div>
       </div>

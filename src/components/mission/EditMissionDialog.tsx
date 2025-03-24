@@ -4,7 +4,6 @@ import { useForm } from "react-hook-form";
 import { Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Input } from "@/components/ui/input";
 import {
   Dialog,
   DialogContent,
@@ -24,23 +23,30 @@ import {
 } from "@/components/ui/form";
 import { toast } from "@/hooks/use-toast";
 
+interface IkigaiComponents {
+  love: string;
+  good: string;
+  paid: string;
+  needs: string;
+}
+
 interface MissionFormValues {
   statement: string;
   vision: string;
-  purpose: string;
+  ikigaiComponents: IkigaiComponents;
 }
 
 interface EditMissionDialogProps {
   currentStatement: string;
   currentVision: string;
-  currentPurpose: string;
+  currentIkigaiComponents: IkigaiComponents;
   onSave: (values: MissionFormValues) => void;
 }
 
 export function EditMissionDialog({
   currentStatement,
   currentVision,
-  currentPurpose,
+  currentIkigaiComponents,
   onSave,
 }: EditMissionDialogProps) {
   const [open, setOpen] = React.useState(false);
@@ -49,7 +55,7 @@ export function EditMissionDialog({
     defaultValues: {
       statement: currentStatement,
       vision: currentVision,
-      purpose: currentPurpose,
+      ikigaiComponents: currentIkigaiComponents,
     },
   });
 
@@ -68,17 +74,17 @@ export function EditMissionDialog({
         <Button
           variant="ghost"
           size="icon"
-          className="absolute top-8 right-24 h-9 w-9 rounded-full bg-background/50 hover:bg-background/80"
+          className="absolute top-8 right-8 h-9 w-9 rounded-full bg-background/50 hover:bg-background/80"
         >
           <Pencil className="h-4 w-4" />
           <span className="sr-only">Edit mission statement</span>
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[600px]">
+      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Edit Mission</DialogTitle>
           <DialogDescription>
-            Update your mission statement, vision, and purpose to align with your current goals.
+            Update your mission statement, vision, and Ikigai components to align with your current goals.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -101,6 +107,80 @@ export function EditMissionDialog({
               )}
             />
             
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="ikigaiComponents.love"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>What I Love</FormLabel>
+                    <FormControl>
+                      <Textarea 
+                        placeholder="What activities bring you joy?" 
+                        className="min-h-[80px]" 
+                        {...field} 
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="ikigaiComponents.good"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>What I'm Good At</FormLabel>
+                    <FormControl>
+                      <Textarea 
+                        placeholder="What are your skills and strengths?" 
+                        className="min-h-[80px]" 
+                        {...field} 
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="ikigaiComponents.paid"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>What I Can Be Paid For</FormLabel>
+                    <FormControl>
+                      <Textarea 
+                        placeholder="What services or products can you provide that people would pay for?" 
+                        className="min-h-[80px]" 
+                        {...field} 
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="ikigaiComponents.needs"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>What the World Needs</FormLabel>
+                    <FormControl>
+                      <Textarea 
+                        placeholder="What problems can you help solve?" 
+                        className="min-h-[80px]" 
+                        {...field} 
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            
             <FormField
               control={form.control}
               name="vision"
@@ -110,24 +190,6 @@ export function EditMissionDialog({
                   <FormControl>
                     <Textarea 
                       placeholder="Enter your vision" 
-                      className="min-h-[80px]" 
-                      {...field} 
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
-            <FormField
-              control={form.control}
-              name="purpose"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Purpose</FormLabel>
-                  <FormControl>
-                    <Textarea 
-                      placeholder="Enter your purpose" 
                       className="min-h-[80px]" 
                       {...field} 
                     />
