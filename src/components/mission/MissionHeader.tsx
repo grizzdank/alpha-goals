@@ -84,27 +84,25 @@ export function MissionHeader({
   
   return (
     <div className="glass rounded-2xl p-6 md:p-8 mb-6 md:mb-8 relative">
-      <div className="absolute top-4 right-4 md:top-6 md:right-6 z-10">
-        <EditMissionDialog 
-          currentStatement={missionStatement}
-          currentVisionGoals={visionGoals}
-          currentIkigaiComponents={ikigaiComponents}
-          onSave={onMissionUpdate}
-        />
-      </div>
-      
       <div className="flex flex-col md:flex-row md:items-start md:justify-between mb-4 md:mb-6">
-        <div>
-          <h1 className="text-xl md:text-2xl font-bold mb-2">Your Mission Statement</h1>
-          <p className="text-muted-foreground max-w-2xl text-sm md:text-base">
-            Your mission statement defines your purpose, values, and direction. 
-            It's the foundation that guides all your decisions and actions.
-          </p>
+        <div className="flex items-center gap-2">
+          <h1 className="text-xl md:text-2xl font-bold">Your Mission Statement</h1>
+          <EditMissionDialog 
+            currentStatement={missionStatement}
+            currentVisionGoals={visionGoals}
+            currentIkigaiComponents={ikigaiComponents}
+            onSave={onMissionUpdate}
+          />
         </div>
         <div className={`h-12 w-12 md:h-14 md:w-14 rounded-full bg-purpose/20 flex items-center justify-center ${isMobile ? 'mt-4 self-center' : ''}`}>
           <Target className="h-6 w-6 md:h-7 md:w-7 text-purpose" />
         </div>
       </div>
+      
+      <p className="text-muted-foreground max-w-2xl text-sm md:text-base mb-4 md:mb-6">
+        Your mission statement defines your purpose, values, and direction. 
+        It's the foundation that guides all your decisions and actions.
+      </p>
       
       <div className="bg-white/40 rounded-xl p-4 md:p-6 border border-white/30 mb-4 md:mb-6 dark:bg-gray-800/40 dark:border-white/10">
         <h3 className="font-semibold mb-2 md:mb-3">Ikigai Statement</h3>
