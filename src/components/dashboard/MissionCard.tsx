@@ -23,7 +23,7 @@ export function MissionCard({ className, style }: MissionCardProps) {
       </div>
       
       <div className="space-y-4">
-        <div className="rounded-xl bg-background/80 p-4 border border-border">
+        <div className="rounded-xl bg-white/40 p-4 border border-white/30">
           <h4 className="text-sm font-medium mb-2">Ikigai Statement</h4>
           <p className="text-sm text-muted-foreground">
             "Empowering individuals to align their personal purpose with action through innovative tools and methodologies."
@@ -31,14 +31,14 @@ export function MissionCard({ className, style }: MissionCardProps) {
         </div>
         
         <div className="grid grid-cols-2 gap-3">
-          <div className="rounded-xl bg-background/80 p-3 border border-border">
+          <div className="rounded-xl bg-white/40 p-3 border border-white/30">
             <h4 className="text-xs font-medium mb-1">Current Sprint</h4>
             <p className="text-xs text-muted-foreground">
               Q3 - Building digital presence
             </p>
           </div>
           
-          <div className="rounded-xl bg-background/80 p-3 border border-border">
+          <div className="rounded-xl bg-white/40 p-3 border border-white/30">
             <h4 className="text-xs font-medium mb-1">Days Left</h4>
             <p className="text-xl font-semibold text-primary">
               18

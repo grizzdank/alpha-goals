@@ -60,7 +60,7 @@ const Index = () => {
 
   if (loading) {
     return (
-      <div className="flex h-screen w-full items-center justify-center bg-background">
+      <div className="flex h-screen w-full items-center justify-center">
         <div className="flex flex-col items-center">
           <div className="h-12 w-12 rounded-full border-4 border-primary border-t-transparent animate-spin-slow"></div>
           <p className="mt-4 text-lg font-medium text-foreground animate-pulse">
@@ -72,7 +72,7 @@ const Index = () => {
   }
 
   return (
-    <div className="flex min-h-screen bg-background">
+    <div className="flex min-h-screen">
       <Sidebar />
       
       <div className="flex-1 flex flex-col">
@@ -116,7 +116,7 @@ const Index = () => {
                 {upcomingActivities.map((activity, index) => (
                   <div 
                     key={activity.id}
-                    className="bg-card rounded-xl p-4 border border-border hover-lift animate-fade-in"
+                    className="bg-white/40 rounded-xl p-4 border border-white/30 hover-lift animate-fade-in"
                     style={{ animationDelay: calculateAnimationDelay(index + 4, 50) }}
                   >
                     <div className="flex items-start">

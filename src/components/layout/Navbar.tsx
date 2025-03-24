@@ -10,7 +10,7 @@ interface NavbarProps {
 
 export function Navbar({ title = "Mission Planner Pro", subtitle }: NavbarProps) {
   return (
-    <header className="sticky top-0 z-20 w-full h-16 bg-background/80 backdrop-blur-md border-b border-border">
+    <header className="sticky top-0 z-20 w-full h-16 bg-white/20 backdrop-blur-md border-b border-white/20">
       <div className="flex items-center justify-between h-full px-6">
         {/* Left side - Title */}
         <div className="flex flex-col justify-center">
@@ -28,12 +28,12 @@ export function Navbar({ title = "Mission Planner Pro", subtitle }: NavbarProps)
             <input 
               type="text" 
               placeholder="Search..." 
-              className="py-2 pl-9 pr-4 rounded-full bg-muted border border-border focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all w-[180px] focus:w-[220px]"
+              className="py-2 pl-9 pr-4 rounded-full bg-white/40 border border-white/30 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all w-[180px] focus:w-[220px]"
             />
           </div>
 
           {/* Notifications */}
-          <button className="relative p-2 rounded-full hover:bg-muted transition-colors">
+          <button className="relative p-2 rounded-full hover:bg-white/30 transition-colors">
             <Bell className="h-5 w-5" />
             <span className="absolute top-1 right-1 flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>

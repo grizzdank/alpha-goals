@@ -35,12 +35,12 @@ export function FinancialCard({
       </div>
       
       <div className="grid grid-cols-2 gap-4 mb-6">
-        <div className="bg-background/80 rounded-xl p-4 border border-border">
+        <div className="bg-white/40 rounded-xl p-4 border border-white/30">
           <h4 className="text-sm font-medium text-muted-foreground mb-1">Monthly</h4>
           <p className="text-2xl font-semibold">${monthlyFreedomNumber.toLocaleString()}</p>
         </div>
         
-        <div className="bg-background/80 rounded-xl p-4 border border-border">
+        <div className="bg-white/40 rounded-xl p-4 border border-white/30">
           <h4 className="text-sm font-medium text-muted-foreground mb-1">Annual</h4>
           <p className="text-2xl font-semibold">${annualFreedomNumber.toLocaleString()}</p>
         </div>
