@@ -27,6 +27,13 @@ export function SprintProgress() {
         This sprint focuses on establishing and growing your online presence 
         through content creation, community building, and digital tools.
       </p>
+      
+      <Link 
+        to="/mission" 
+        className="inline-flex items-center text-sm text-primary font-medium hover:underline"
+      >
+        View current sprint <ArrowRight className="ml-1 h-4 w-4" />
+      </Link>
     </div>
   );
 }
