@@ -144,6 +144,7 @@ export default {
 			boxShadow: {
 				'glass': '0 4px 30px rgba(0, 0, 0, 0.1)',
 				'neo': '5px 5px 10px #d1d1d1, -5px -5px 10px #ffffff',
+				'neo-dark': '5px 5px 10px rgba(0, 0, 0, 0.3), -5px -5px 10px rgba(255, 255, 255, 0.05)',
 			}
 		}
 	},

@@ -60,18 +60,18 @@ export function Sidebar() {
     <aside 
       className={cn(
         "h-screen sticky top-0 flex flex-col transition-all duration-300 ease-in-out",
-        "border-r border-border bg-sidebar shadow-sm z-30",
+        "border-r border-border bg-sidebar dark:bg-sidebar shadow-sm z-30",
         collapsed ? "w-[80px]" : "w-[280px]"
       )}
     >
       {/* Logo */}
-      <div className="flex items-center h-16 px-4 border-b border-border">
+      <div className="flex items-center h-16 px-4 border-b border-border dark:border-sidebar-border">
         <div className={cn(
           "flex items-center transition-opacity duration-300",
           collapsed ? "opacity-0 w-0 overflow-hidden" : "opacity-100"
         )}>
           <div className="text-xl font-bold text-primary mr-2">Mission</div>
-          <div className="text-xl font-semibold">Planner</div>
+          <div className="text-xl font-semibold dark:text-white">Planner</div>
         </div>
         <div className={cn(
           "text-xl font-bold text-primary transition-opacity duration-300",
@@ -128,7 +128,7 @@ export function Sidebar() {
       </nav>
       
       {/* Collapse Button */}
-      <div className="p-4 border-t border-border">
+      <div className="p-4 border-t border-border dark:border-sidebar-border">
         <button
           onClick={() => setCollapsed(!collapsed)}
           className="flex w-full items-center justify-center rounded-lg p-2 text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
