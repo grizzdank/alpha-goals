@@ -29,8 +29,8 @@ export function FinancialCard({
           <h3 className="text-lg font-semibold text-foreground">Financial Freedom</h3>
           <p className="text-sm text-muted-foreground">Your path to independence</p>
         </div>
-        <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-          <DollarSign className="h-5 w-5 text-primary" />
+        <div className="h-10 w-10 rounded-full bg-purpose/10 flex items-center justify-center">
+          <DollarSign className="h-5 w-5 text-purpose" />
         </div>
       </div>
       
@@ -51,16 +51,16 @@ export function FinancialCard({
           <h4 className="text-sm font-medium">Progress to Goal</h4>
           <span className="text-sm font-medium">{percentToGoal}%</span>
         </div>
-        <div className="w-full bg-secondary rounded-full h-2.5">
+        <div className="w-full bg-muted rounded-full h-2.5">
           <div 
-            className="bg-primary h-2.5 rounded-full transition-all duration-1000 ease-out"
+            className="bg-purpose h-2.5 rounded-full transition-all duration-1000 ease-out"
             style={{ width: `${percentToGoal}%` }}
           />
         </div>
       </div>
       
       <div>
-        <Link to="/financial" className="inline-flex items-center text-sm font-medium text-primary hover:text-primary-light transition-colors card-link">
+        <Link to="/financial" className="inline-flex items-center text-sm font-medium text-primary hover:text-primary/80 transition-colors card-link">
           View financial details
           <ArrowRight className="ml-1 h-4 w-4" />
         </Link>

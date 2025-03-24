@@ -7,94 +7,94 @@
 
 @layer base {
   :root {
-    --background: 210 20% 98%;
-    --foreground: 240 10% 3.9%;
+    --background: 30 30% 96%;
+    --foreground: 20 10% 5%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 240 10% 3.9%;
+    --card: 30 30% 99%;
+    --card-foreground: 20 10% 5%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 3.9%;
+    --popover: 30 30% 99%;
+    --popover-foreground: 20 10% 5%;
 
-    --primary: 221 83% 53%;
-    --primary-foreground: 210 40% 98%;
-    --primary-light: 217 91% 60%;
+    --primary: 24 95% 53%;
+    --primary-foreground: 30 30% 99%;
+    --primary-light: 24 100% 75%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 30 20% 94%;
+    --secondary-foreground: 20 10% 5%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 30 20% 94%;
+    --muted-foreground: 25 5% 45%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 30 20% 92%;
+    --accent-foreground: 20 10% 5%;
 
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 30 30% 99%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 221 83% 53%;
+    --border: 30 15% 90%;
+    --input: 30 15% 90%;
+    --ring: 24 95% 53%;
 
     --radius: 1rem;
 
-    --sidebar-background: 0 0% 100%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 221 83% 53%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-background: 30 35% 96%;
+    --sidebar-foreground: 20 10% 5%;
+    --sidebar-primary: 24 95% 53%;
+    --sidebar-primary-foreground: 30 30% 99%;
+    --sidebar-accent: 30 20% 92%;
+    --sidebar-accent-foreground: 20 10% 5%;
+    --sidebar-border: 30 15% 85%;
+    --sidebar-ring: 24 95% 53%;
 
-    /* Alpha Score Category Colors */
-    --relationships: 340 82% 52%;
-    --relationships-light: 340 100% 88%;
-    --purpose: 25 95% 53%;
-    --purpose-light: 36 100% 85%;
-    --body: 142 72% 29%;
-    --body-light: 142 76% 87%;
-    --mind: 217 91% 60%;
-    --mind-light: 213 94% 89%;
+    /* Alpha Score Category Colors - Softer variants */
+    --relationships: 340 70% 60%;
+    --relationships-light: 340 85% 90%;
+    --purpose: 24 95% 53%;
+    --purpose-light: 24 100% 85%;
+    --body: 145 60% 40%;
+    --body-light: 145 65% 90%;
+    --mind: 200 70% 60%;
+    --mind-light: 200 80% 90%;
   }
 
   .dark {
-    --background: 224 71% 4%;
-    --foreground: 213 31% 91%;
+    --background: 20 15% 10%;
+    --foreground: 30 10% 90%;
 
-    --card: 224 71% 4%;
-    --card-foreground: 213 31% 91%;
+    --card: 20 15% 10%;
+    --card-foreground: 30 10% 90%;
 
-    --popover: 224 71% 4%;
-    --popover-foreground: 213 31% 91%;
+    --popover: 20 15% 10%;
+    --popover-foreground: 30 10% 90%;
 
-    --primary: 217 91% 60%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: 24 95% 53%;
+    --primary-foreground: 20 5% 8%;
 
-    --secondary: 222.2 47.4% 11.2%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 20 10% 20%;
+    --secondary-foreground: 30 10% 90%;
 
-    --muted: 223 47% 11%;
-    --muted-foreground: 215.4 16.3% 56.9%;
+    --muted: 20 10% 20%;
+    --muted-foreground: 30 10% 70%;
 
-    --accent: 216 34% 17%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 20 10% 25%;
+    --accent-foreground: 30 10% 90%;
 
     --destructive: 0 63% 31%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 30 10% 90%;
 
-    --border: 216 34% 17%;
-    --input: 216 34% 17%;
-    --ring: 224 71% 4%;
+    --border: 20 10% 25%;
+    --input: 20 10% 25%;
+    --ring: 24 95% 53%;
 
-    --sidebar-background: 224 71% 4%;
-    --sidebar-foreground: 213 31% 91%;
-    --sidebar-primary: 217 91% 60%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 216 34% 17%;
-    --sidebar-accent-foreground: 213 31% 91%;
-    --sidebar-border: 216 34% 17%;
-    --sidebar-ring: 217 91% 60%;
+    --sidebar-background: 20 15% 10%;
+    --sidebar-foreground: 30 10% 90%;
+    --sidebar-primary: 24 95% 53%;
+    --sidebar-primary-foreground: 30 30% 99%;
+    --sidebar-accent: 20 10% 25%;
+    --sidebar-accent-foreground: 30 10% 90%;
+    --sidebar-border: 20 10% 25%;
+    --sidebar-ring: 24 95% 53%;
   }
 }
 
@@ -116,7 +116,7 @@
 
   /* Custom utilities */
   .glass {
-    @apply bg-white/70 backdrop-blur-[20px] border border-white/50 shadow-glass;
+    @apply bg-card/90 backdrop-blur-[20px] border border-border/80 shadow-glass;
   }
   
   .glass-dark {

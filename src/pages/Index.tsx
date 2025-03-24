@@ -95,10 +95,12 @@ const Index = () => {
               <div className="flex flex-col space-y-6">
                 <MissionCard 
                   className="flex-1 animate-fade-in"
+                  style={{ animationDelay: calculateAnimationDelay(1) }}
                 />
                 
                 <FinancialCard 
                   className="flex-1 animate-fade-in"
+                  style={{ animationDelay: calculateAnimationDelay(2) }}
                 />
               </div>
             </div>
@@ -114,7 +116,7 @@ const Index = () => {
                 {upcomingActivities.map((activity, index) => (
                   <div 
                     key={activity.id}
-                    className="bg-background/80 rounded-xl p-4 border border-border hover-lift animate-fade-in"
+                    className="bg-card rounded-xl p-4 border border-border hover-lift animate-fade-in"
                     style={{ animationDelay: calculateAnimationDelay(index + 4, 50) }}
                   >
                     <div className="flex items-start">

@@ -17,8 +17,8 @@ export function MissionCard({ className, style }: MissionCardProps) {
           <h3 className="text-lg font-semibold text-foreground">Mission & Vision</h3>
           <p className="text-sm text-muted-foreground">Your purpose alignment</p>
         </div>
-        <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-          <Target className="h-5 w-5 text-primary" />
+        <div className="h-10 w-10 rounded-full bg-purpose/10 flex items-center justify-center">
+          <Target className="h-5 w-5 text-purpose" />
         </div>
       </div>
       
@@ -48,7 +48,7 @@ export function MissionCard({ className, style }: MissionCardProps) {
       </div>
       
       <div className="mt-4">
-        <Link to="/mission" className="inline-flex items-center text-sm font-medium text-primary hover:text-primary-light transition-colors card-link">
+        <Link to="/mission" className="inline-flex items-center text-sm font-medium text-primary hover:text-primary/80 transition-colors card-link">
           View complete mission
           <ArrowRight className="ml-1 h-4 w-4" />
         </Link>
