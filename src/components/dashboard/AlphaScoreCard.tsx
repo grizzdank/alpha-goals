@@ -14,11 +14,12 @@ interface AlphaScoreCardProps {
   totalScore: number;
   categoryScores: CategoryScore[];
   className?: string;
+  style?: React.CSSProperties;
 }
 
-export function AlphaScoreCard({ totalScore, categoryScores, className }: AlphaScoreCardProps) {
+export function AlphaScoreCard({ totalScore, categoryScores, className, style }: AlphaScoreCardProps) {
   return (
-    <div className={cn("glass rounded-2xl p-6 hover-lift hover-scale", className)}>
+    <div className={cn("glass rounded-2xl p-6 hover-lift hover-scale", className)} style={style}>
       <div className="flex justify-between items-start mb-6">
         <div>
           <h3 className="text-lg font-semibold text-foreground">Alpha Score</h3>

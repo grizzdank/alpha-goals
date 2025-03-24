@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 
 interface FinancialCardProps {
   className?: string;
+  style?: React.CSSProperties;
   monthlyFreedomNumber?: number;
   annualFreedomNumber?: number;
   currentSavings?: number;
@@ -13,6 +14,7 @@ interface FinancialCardProps {
 
 export function FinancialCard({
   className,
+  style,
   monthlyFreedomNumber = 6500,
   annualFreedomNumber = 78000,
   currentSavings = 125000,
@@ -21,7 +23,7 @@ export function FinancialCard({
   const percentToGoal = Math.min(100, Math.round((currentSavings / annualFreedomNumber) * 100));
   
   return (
-    <div className={cn("glass rounded-2xl p-6 hover-lift", className)}>
+    <div className={cn("glass rounded-2xl p-6 hover-lift", className)} style={style}>
       <div className="flex justify-between items-start mb-6">
         <div>
           <h3 className="text-lg font-semibold text-foreground">Financial Freedom</h3>

@@ -6,11 +6,12 @@ import { Link } from 'react-router-dom';
 
 interface MissionCardProps {
   className?: string;
+  style?: React.CSSProperties;
 }
 
-export function MissionCard({ className }: MissionCardProps) {
+export function MissionCard({ className, style }: MissionCardProps) {
   return (
-    <div className={cn("glass rounded-2xl p-6 hover-lift", className)}>
+    <div className={cn("glass rounded-2xl p-6 hover-lift", className)} style={style}>
       <div className="flex justify-between items-start mb-6">
         <div>
           <h3 className="text-lg font-semibold text-foreground">Mission & Vision</h3>

@@ -23,10 +23,10 @@ const Index = () => {
   const alphaScoreData = {
     totalScore: 76,
     categoryScores: [
-      { category: "relationships", score: 82, label: "Relationships" },
-      { category: "purpose", score: 75, label: "Purpose" },
-      { category: "body", score: 68, label: "Body" },
-      { category: "mind", score: 79, label: "Mind" },
+      { category: "relationships" as const, score: 82, label: "Relationships" },
+      { category: "purpose" as const, score: 75, label: "Purpose" },
+      { category: "body" as const, score: 68, label: "Body" },
+      { category: "mind" as const, score: 79, label: "Mind" },
     ],
   };
 
@@ -80,7 +80,7 @@ const Index = () => {
         
         <main className="flex-1 px-6 py-8">
           <div 
-            className="max-w-7xl mx-auto"
+            className="max-w-7xl mx-auto animate-fade-in"
             style={{ animationDelay: "200ms" }}
           >
             {/* Dashboard Grid */}
@@ -95,12 +95,10 @@ const Index = () => {
               <div className="flex flex-col space-y-6">
                 <MissionCard 
                   className="flex-1 animate-fade-in"
-                  style={{ animationDelay: calculateAnimationDelay(1) }}
                 />
                 
                 <FinancialCard 
                   className="flex-1 animate-fade-in"
-                  style={{ animationDelay: calculateAnimationDelay(2) }}
                 />
               </div>
             </div>
