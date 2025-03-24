@@ -2,6 +2,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, Clock } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
 
 export function SprintProgress() {
   return (
@@ -14,8 +15,8 @@ export function SprintProgress() {
         </div>
       </div>
       
-      <div className="w-full bg-white/50 rounded-full h-2 mb-4">
-        <div className="bg-primary h-2 rounded-full" style={{ width: "80%" }}></div>
+      <div className="w-full mb-4">
+        <Progress value={80} className="h-2" />
       </div>
       
       <p className="text-muted-foreground mb-4 text-sm md:text-base">
