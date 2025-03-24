@@ -1,11 +1,57 @@
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { Navbar } from "@/components/layout/Navbar";
 import { Target, ArrowRight, Clock, Calendar } from "lucide-react";
 import { Link } from "react-router-dom";
+import { EditMissionDialog } from "@/components/mission/EditMissionDialog";
+
+// Helper functions to get/set mission data from localStorage
+const getMissionData = (key, defaultValue) => {
+  const stored = localStorage.getItem(key);
+  return stored ? JSON.parse(stored) : defaultValue;
+};
+
+const setMissionData = (key, value) => {
+  localStorage.setItem(key, JSON.stringify(value));
+  // Dispatch an event so other components can update
+  window.dispatchEvent(new Event('storage'));
+};
 
 const Mission = () => {
+  // State for the editable mission content with localStorage persistence
+  const [missionStatement, setMissionStatement] = useState(() => 
+    getMissionData('missionStatement', "Empowering individuals to align their personal purpose with action through innovative tools and methodologies.")
+  );
+  
+  const [visionStatement, setVisionStatement] = useState(() => 
+    getMissionData('visionStatement', "To create a world where individuals are empowered to live purposefully and achieve their highest potential through alignment of values, strengths, and actions.")
+  );
+  
+  const [purposeStatement, setPurposeStatement] = useState(() => 
+    getMissionData('purposeStatement', "To provide innovative tools and methodologies that help people discover their purpose and translate it into actionable steps for a fulfilling life.")
+  );
+
+  // Save to localStorage when states change
+  useEffect(() => {
+    setMissionData('missionStatement', missionStatement);
+  }, [missionStatement]);
+
+  useEffect(() => {
+    setMissionData('visionStatement', visionStatement);
+  }, [visionStatement]);
+
+  useEffect(() => {
+    setMissionData('purposeStatement', purposeStatement);
+  }, [purposeStatement]);
+
+  // Handler for when mission is updated
+  const handleMissionUpdate = ({ statement, vision, purpose }) => {
+    setMissionStatement(statement);
+    setVisionStatement(vision);
+    setPurposeStatement(purpose);
+  };
+
   return (
     <div className="flex min-h-screen">
       <Sidebar />
@@ -17,7 +63,14 @@ const Mission = () => {
           <div className="max-w-7xl mx-auto animate-fade-in">
             
             {/* Header Section */}
-            <div className="glass rounded-2xl p-8 mb-8">
+            <div className="glass rounded-2xl p-8 mb-8 relative">
+              <EditMissionDialog 
+                currentStatement={missionStatement}
+                currentVision={visionStatement}
+                currentPurpose={purposeStatement}
+                onSave={handleMissionUpdate}
+              />
+              
               <div className="flex items-start justify-between mb-6">
                 <div>
                   <h1 className="text-2xl font-bold mb-2">Your Mission Statement</h1>
@@ -31,15 +84,15 @@ const Mission = () => {
                 </div>
               </div>
               
-              <div className="bg-white/40 rounded-xl p-6 border border-white/30 mb-6">
+              <div className="bg-white/40 rounded-xl p-6 border border-white/30 mb-6 dark:bg-gray-800/40 dark:border-white/10">
                 <h3 className="font-semibold mb-3">Ikigai Statement</h3>
                 <p className="text-lg italic">
-                  "Empowering individuals to align their personal purpose with action through innovative tools and methodologies."
+                  "{missionStatement}"
                 </p>
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="bg-white/40 rounded-xl p-5 border border-white/30">
+                <div className="bg-white/40 rounded-xl p-5 border border-white/30 dark:bg-gray-800/40 dark:border-white/10">
                   <h3 className="font-medium mb-2">Core Values</h3>
                   <ul className="space-y-2">
                     <li className="flex items-center">
@@ -61,21 +114,17 @@ const Mission = () => {
                   </ul>
                 </div>
                 
-                <div className="bg-white/40 rounded-xl p-5 border border-white/30">
+                <div className="bg-white/40 rounded-xl p-5 border border-white/30 dark:bg-gray-800/40 dark:border-white/10">
                   <h3 className="font-medium mb-2">Vision</h3>
                   <p className="text-muted-foreground">
-                    To create a world where individuals are empowered to live 
-                    purposefully and achieve their highest potential through
-                    alignment of values, strengths, and actions.
+                    {visionStatement}
                   </p>
                 </div>
                 
-                <div className="bg-white/40 rounded-xl p-5 border border-white/30">
+                <div className="bg-white/40 rounded-xl p-5 border border-white/30 dark:bg-gray-800/40 dark:border-white/10">
                   <h3 className="font-medium mb-2">Purpose</h3>
                   <p className="text-muted-foreground">
-                    To provide innovative tools and methodologies that help people
-                    discover their purpose and translate it into actionable steps
-                    for a fulfilling life.
+                    {purposeStatement}
                   </p>
                 </div>
               </div>
