@@ -21,8 +21,33 @@ export function MissionContainer() {
     getMissionData('missionStatement', "Empowering individuals to align their personal purpose with action through innovative tools and methodologies.")
   );
   
-  const [visionStatement, setVisionStatement] = useState(() => 
-    getMissionData('visionStatement', "To create a world where individuals are empowered to live purposefully and achieve their highest potential through alignment of values, strengths, and actions.")
+  const [visionGoals, setVisionGoals] = useState(() => 
+    getMissionData('visionGoals', {
+      oneYear: {
+        statement: "In 1 year, I will have established a solid foundation for my personal development platform with an active user base.",
+        milestones: [
+          "Launch beta version of the platform",
+          "Acquire first 100 active users",
+          "Establish consistent content creation schedule"
+        ]
+      },
+      fiveYear: {
+        statement: "In 5 years, I will have scaled my platform to reach thousands of people and created a sustainable business model.",
+        milestones: [
+          "Grow user base to 10,000+ active users",
+          "Develop premium offering with recurring revenue",
+          "Build a small team of dedicated professionals"
+        ]
+      },
+      tenYear: {
+        statement: "In 10 years, I will have built a recognized brand in the personal development space that positively impacts millions of lives.",
+        milestones: [
+          "Reach 1 million+ users globally",
+          "Publish research on effectiveness of the platform's methodology",
+          "Establish partnerships with major educational institutions"
+        ]
+      }
+    })
   );
   
   const [ikigaiComponents, setIkigaiComponents] = useState(() => 
@@ -40,8 +65,8 @@ export function MissionContainer() {
   }, [missionStatement]);
 
   useEffect(() => {
-    setMissionData('visionStatement', visionStatement);
-  }, [visionStatement]);
+    setMissionData('visionGoals', visionGoals);
+  }, [visionGoals]);
 
   useEffect(() => {
     setMissionData('ikigaiComponents', ikigaiComponents);
@@ -50,11 +75,24 @@ export function MissionContainer() {
   // Handler for when mission is updated
   const handleMissionUpdate = ({ 
     statement, 
-    vision, 
+    visionGoals: newVisionGoals,
     ikigaiComponents: newIkigaiComponents
   }: { 
     statement: string; 
-    vision: string; 
+    visionGoals: {
+      oneYear: {
+        statement: string;
+        milestones: string[];
+      };
+      fiveYear: {
+        statement: string;
+        milestones: string[];
+      };
+      tenYear: {
+        statement: string;
+        milestones: string[];
+      };
+    };
     ikigaiComponents: {
       love: string;
       good: string;
@@ -63,7 +101,7 @@ export function MissionContainer() {
     }
   }) => {
     setMissionStatement(statement);
-    setVisionStatement(vision);
+    setVisionGoals(newVisionGoals);
     setIkigaiComponents(newIkigaiComponents);
   };
   
@@ -71,7 +109,7 @@ export function MissionContainer() {
     <div className="w-full mx-auto animate-fade-in">
       <MissionHeader 
         missionStatement={missionStatement}
-        visionStatement={visionStatement}
+        visionGoals={visionGoals}
         ikigaiComponents={ikigaiComponents}
         onMissionUpdate={handleMissionUpdate}
       />

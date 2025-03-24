@@ -4,9 +4,45 @@ import { Target } from "lucide-react";
 import { EditMissionDialog } from "./EditMissionDialog";
 import { useIsMobile } from "@/hooks/use-mobile";
 
+interface VisionGoalProps {
+  title: string;
+  statement: string;
+  milestones: string[];
+}
+
+const VisionGoal = ({ title, statement, milestones }: VisionGoalProps) => (
+  <div className="bg-white/40 rounded-xl p-4 md:p-5 border border-white/30 dark:bg-gray-800/40 dark:border-white/10">
+    <h3 className="font-medium mb-2">{title}</h3>
+    <p className="text-muted-foreground text-sm md:text-base mb-3">
+      {statement}
+    </p>
+    <div>
+      <h4 className="text-sm font-medium mb-2">Key Milestones:</h4>
+      <ul className="list-disc pl-5 text-xs md:text-sm text-muted-foreground space-y-1">
+        {milestones.map((milestone, index) => (
+          <li key={index}>{milestone}</li>
+        ))}
+      </ul>
+    </div>
+  </div>
+);
+
 interface MissionHeaderProps {
   missionStatement: string;
-  visionStatement: string;
+  visionGoals: {
+    oneYear: {
+      statement: string;
+      milestones: string[];
+    };
+    fiveYear: {
+      statement: string;
+      milestones: string[];
+    };
+    tenYear: {
+      statement: string;
+      milestones: string[];
+    };
+  };
   ikigaiComponents: {
     love: string;
     good: string;
@@ -15,7 +51,20 @@ interface MissionHeaderProps {
   };
   onMissionUpdate: (values: { 
     statement: string; 
-    vision: string; 
+    visionGoals: {
+      oneYear: {
+        statement: string;
+        milestones: string[];
+      };
+      fiveYear: {
+        statement: string;
+        milestones: string[];
+      };
+      tenYear: {
+        statement: string;
+        milestones: string[];
+      };
+    };
     ikigaiComponents: {
       love: string;
       good: string;
@@ -27,7 +76,7 @@ interface MissionHeaderProps {
 
 export function MissionHeader({
   missionStatement,
-  visionStatement,
+  visionGoals,
   ikigaiComponents,
   onMissionUpdate,
 }: MissionHeaderProps) {
@@ -37,7 +86,7 @@ export function MissionHeader({
     <div className="glass rounded-2xl p-6 md:p-8 mb-6 md:mb-8 relative">
       <EditMissionDialog 
         currentStatement={missionStatement}
-        currentVision={visionStatement}
+        currentVisionGoals={visionGoals}
         currentIkigaiComponents={ikigaiComponents}
         onSave={onMissionUpdate}
       />
@@ -90,13 +139,25 @@ export function MissionHeader({
             {ikigaiComponents.needs}
           </p>
         </div>
+      </div>
 
-        <div className="bg-white/40 rounded-xl p-4 md:p-5 border border-white/30 dark:bg-gray-800/40 dark:border-white/10 md:col-span-2">
-          <h3 className="font-medium mb-2">Vision</h3>
-          <p className="text-muted-foreground text-sm md:text-base">
-            {visionStatement}
-          </p>
-        </div>
+      <h2 className="text-lg md:text-xl font-bold mt-6 mb-4">Vision Timeline</h2>
+      <div className="grid grid-cols-1 gap-4 md:gap-6">
+        <VisionGoal 
+          title="1-Year Vision" 
+          statement={visionGoals.oneYear.statement}
+          milestones={visionGoals.oneYear.milestones}
+        />
+        <VisionGoal 
+          title="5-Year Vision" 
+          statement={visionGoals.fiveYear.statement}
+          milestones={visionGoals.fiveYear.milestones}
+        />
+        <VisionGoal 
+          title="10-Year Vision" 
+          statement={visionGoals.tenYear.statement}
+          milestones={visionGoals.tenYear.milestones}
+        />
       </div>
     </div>
   );

@@ -13,31 +13,39 @@ export function MissionCard({ className, style }: MissionCardProps) {
   // Default mission statement
   const defaultStatement = "Empowering individuals to align their personal purpose with action through innovative tools and methodologies.";
   
-  // State for the mission statement
+  // State for the mission statement and vision goals
   const [missionStatement, setMissionStatement] = useState(defaultStatement);
+  const [oneYearVision, setOneYearVision] = useState("");
   
-  // Effect to load the mission statement from localStorage
+  // Effect to load the mission data from localStorage
   useEffect(() => {
-    const loadMissionStatement = () => {
+    const loadMissionData = () => {
       try {
-        const stored = localStorage.getItem('missionStatement');
-        if (stored) {
-          const parsed = JSON.parse(stored);
-          setMissionStatement(parsed);
+        // Load mission statement
+        const storedStatement = localStorage.getItem('missionStatement');
+        if (storedStatement) {
+          setMissionStatement(JSON.parse(storedStatement));
+        }
+        
+        // Load vision goals
+        const storedVisionGoals = localStorage.getItem('visionGoals');
+        if (storedVisionGoals) {
+          const { oneYear } = JSON.parse(storedVisionGoals);
+          setOneYearVision(oneYear.statement);
         }
       } catch (error) {
-        console.error("Error loading mission statement:", error);
+        console.error("Error loading mission data:", error);
       }
     };
     
     // Load on mount
-    loadMissionStatement();
+    loadMissionData();
     
     // Listen for changes
-    window.addEventListener('storage', loadMissionStatement);
+    window.addEventListener('storage', loadMissionData);
     
     return () => {
-      window.removeEventListener('storage', loadMissionStatement);
+      window.removeEventListener('storage', loadMissionData);
     };
   }, []);
 
@@ -58,6 +66,13 @@ export function MissionCard({ className, style }: MissionCardProps) {
           <h4 className="text-sm font-medium mb-2">Ikigai Statement</h4>
           <p className="text-sm text-muted-foreground">
             "{missionStatement}"
+          </p>
+        </div>
+        
+        <div className="rounded-xl bg-white/40 p-4 border border-white/30 dark:bg-gray-800/40 dark:border-white/10">
+          <h4 className="text-sm font-medium mb-2">1-Year Vision</h4>
+          <p className="text-sm text-muted-foreground">
+            {oneYearVision || "Set your 1-year vision on the mission page"}
           </p>
         </div>
         
