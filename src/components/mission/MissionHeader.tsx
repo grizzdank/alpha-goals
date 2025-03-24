@@ -84,7 +84,7 @@ export function MissionHeader({
   
   return (
     <div className="glass rounded-2xl p-6 md:p-8 mb-6 md:mb-8 relative">
-      <div className="absolute top-6 right-6 md:top-8 md:right-8 z-10">
+      <div className="absolute top-4 right-4 md:top-6 md:right-6 z-10">
         <EditMissionDialog 
           currentStatement={missionStatement}
           currentVisionGoals={visionGoals}
