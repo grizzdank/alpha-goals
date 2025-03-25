@@ -1,9 +1,9 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { Navbar } from "@/components/layout/Navbar";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { Menu } from "lucide-react";
+import { Menu, Plus, Edit } from "lucide-react";
 import { 
   Sheet,
   SheetContent,
@@ -11,9 +11,13 @@ import {
 } from "@/components/ui/sheet";
 import { HabitForm } from "@/components/sprint/HabitForm";
 import { CurrentSprint } from "@/components/mission/CurrentSprint";
+import { SprintEdit } from "@/components/sprint/SprintEdit";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const Sprint = () => {
   const isMobile = useIsMobile();
+  const [activeTab, setActiveTab] = useState("overview");
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -34,8 +38,21 @@ const Sprint = () => {
           
           <main className="flex-1 px-4 py-6">
             <div className="max-w-7xl mx-auto animate-fade-in">
-              <CurrentSprint />
-              <HabitForm />
+              <div className="mb-6">
+                <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+                  <TabsList className="grid w-full grid-cols-2">
+                    <TabsTrigger value="overview">Sprint Overview</TabsTrigger>
+                    <TabsTrigger value="edit">Edit Sprint</TabsTrigger>
+                  </TabsList>
+                  <TabsContent value="overview" className="mt-4">
+                    <CurrentSprint />
+                    <HabitForm />
+                  </TabsContent>
+                  <TabsContent value="edit" className="mt-4">
+                    <SprintEdit />
+                  </TabsContent>
+                </Tabs>
+              </div>
             </div>
           </main>
         </>
@@ -48,8 +65,21 @@ const Sprint = () => {
             
             <main className="flex-1 px-6 py-8">
               <div className="max-w-7xl mx-auto animate-fade-in">
-                <CurrentSprint />
-                <HabitForm />
+                <div className="mb-6">
+                  <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+                    <TabsList className="grid w-full grid-cols-2 max-w-md">
+                      <TabsTrigger value="overview">Sprint Overview</TabsTrigger>
+                      <TabsTrigger value="edit">Edit Sprint</TabsTrigger>
+                    </TabsList>
+                    <TabsContent value="overview" className="mt-4">
+                      <CurrentSprint />
+                      <HabitForm />
+                    </TabsContent>
+                    <TabsContent value="edit" className="mt-4">
+                      <SprintEdit />
+                    </TabsContent>
+                  </Tabs>
+                </div>
               </div>
             </main>
           </div>
