@@ -1,7 +1,9 @@
-
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { ArrowRight } from "lucide-react";
 import { MissionHeader } from "./MissionHeader";
-import { CurrentSprint } from "./CurrentSprint";
+import { SprintProgress } from "./SprintProgress";
+import { Button } from "@/components/ui/button";
 
 // Helper functions to get/set mission data from localStorage
 const getMissionData = (key: string, defaultValue: any) => {
@@ -113,7 +115,23 @@ export function MissionContainer() {
         ikigaiComponents={ikigaiComponents}
         onMissionUpdate={handleMissionUpdate}
       />
-      <CurrentSprint />
+      
+      <div className="glass rounded-2xl p-6 md:p-8 mb-6">
+        <div className="flex justify-between items-center mb-6">
+          <div>
+            <h2 className="text-xl md:text-2xl font-bold">Current Sprint</h2>
+            <p className="text-muted-foreground text-sm">Your 90-day focus period</p>
+          </div>
+          <Button asChild>
+            <Link to="/sprint" className="flex items-center">
+              View Sprint Details
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Link>
+          </Button>
+        </div>
+        
+        <SprintProgress />
+      </div>
     </div>
   );
 }
