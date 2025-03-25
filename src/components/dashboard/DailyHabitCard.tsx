@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import { CalendarDays, CheckCircle } from "lucide-react";
+import { CalendarDays, CheckCircle, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 
@@ -170,11 +170,19 @@ export function DailyHabitCard({ className = "", style, currentHabit }: DailyHab
           </div>
         </div>
         
-        <Button asChild variant="outline" className="w-full">
-          <Link to="/sprints">
-            Configure Monthly Habits
-          </Link>
-        </Button>
+        <div className="grid grid-cols-2 gap-3">
+          <Button asChild variant="outline" className="w-full">
+            <Link to="/habits">
+              Manage Habits
+            </Link>
+          </Button>
+          <Button asChild className="w-full">
+            <Link to="/habits?tab=new">
+              <Plus className="h-4 w-4 mr-1" />
+              New Habit
+            </Link>
+          </Button>
+        </div>
       </CardContent>
     </Card>
   );
