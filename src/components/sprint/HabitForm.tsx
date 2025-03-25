@@ -1,8 +1,9 @@
 
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import { CalendarPlus } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { CalendarPlus, ListChecks } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -153,6 +154,13 @@ export function HabitForm() {
           </form>
         </Form>
       </CardContent>
+      
+      <CardFooter className="bg-muted/20 px-4 py-3 border-t">
+        <Link to="/habits" className="flex items-center gap-1.5 text-primary hover:underline text-sm">
+          <ListChecks className="h-4 w-4" />
+          <span className="font-medium">Manage All Habits</span>
+        </Link>
+      </CardFooter>
     </Card>
   );
 }

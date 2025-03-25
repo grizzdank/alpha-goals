@@ -1,10 +1,9 @@
 
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { Navbar } from "@/components/layout/Navbar";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { Menu, Plus, Edit, ListChecks } from "lucide-react";
+import { Menu } from "lucide-react";
 import { 
   Sheet,
   SheetContent,
@@ -47,11 +46,7 @@ const Sprint = () => {
                     <TabsTrigger value="edit">Edit Sprint</TabsTrigger>
                   </TabsList>
                   <TabsContent value="overview" className="mt-4">
-                    <div className="mb-3 flex justify-between items-center">
-                      <Link to="/habits" className="flex items-center gap-1.5 text-primary hover:underline">
-                        <ListChecks className="h-4 w-4" />
-                        <span className="font-medium">Manage All Habits</span>
-                      </Link>
+                    <div className="mb-3 flex justify-end">
                       <Badge variant="secondary" className="bg-muted/50">
                         Current Sprint
                       </Badge>
@@ -83,11 +78,7 @@ const Sprint = () => {
                       <TabsTrigger value="edit">Edit Sprint</TabsTrigger>
                     </TabsList>
                     <TabsContent value="overview" className="mt-4">
-                      <div className="mb-3 flex justify-between items-center">
-                        <Link to="/habits" className="flex items-center gap-1.5 text-primary hover:underline">
-                          <ListChecks className="h-4 w-4" />
-                          <span className="font-medium">Manage All Habits</span>
-                        </Link>
+                      <div className="mb-3 flex justify-end">
                         <Badge variant="secondary" className="bg-muted/50">
                           Current Sprint
                         </Badge>
