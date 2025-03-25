@@ -1,13 +1,16 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SprintFormValues, sprintFormSchema } from "./SprintDetailsForm";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { Form } from "@/components/ui/form";
 import { SprintDetailsForm } from "./SprintDetailsForm";
+import { SprintObjectivesSection } from "./SprintObjectives";
+import { Objective } from "./SprintObjectiveItem";
 
 interface CreateSprintDialogProps {
   open: boolean;
@@ -16,6 +19,10 @@ interface CreateSprintDialogProps {
 
 export function CreateSprintDialog({ open, onOpenChange }: CreateSprintDialogProps) {
   const { toast } = useToast();
+  const [activeTab, setActiveTab] = useState("details");
+  const [objectives, setObjectives] = useState<Objective[]>([
+    { id: "1", title: "", description: "", progress: 0 }
+  ]);
   
   // Default values for the next sprint (using current date + 90 days for end date)
   const today = new Date();
@@ -40,9 +47,41 @@ export function CreateSprintDialog({ open, onOpenChange }: CreateSprintDialogPro
     defaultValues,
   });
   
+  // Objective functions
+  const handleAddObjective = () => {
+    const newObjective: Objective = {
+      id: Date.now().toString(),
+      title: "",
+      description: "",
+      progress: -1 // Will be set to 0 when saving
+    };
+    
+    setObjectives([...objectives, newObjective]);
+  };
+  
+  const handleRemoveObjective = (id: string) => {
+    setObjectives(objectives.filter(obj => obj.id !== id));
+  };
+  
+  const handleUpdateObjective = (id: string, field: keyof Objective, value: string | number) => {
+    setObjectives(objectives.map(obj => 
+      obj.id === id ? { ...obj, [field]: value } : obj
+    ));
+  };
+  
   function onSubmit(data: SprintFormValues) {
+    // Validate that the objectives have titles
+    const validObjectives = objectives.filter(obj => obj.title.trim() !== "");
+    
+    // Set progress to 0 for all objectives (they start at 0 in a new sprint)
+    const finalObjectives = validObjectives.map(obj => ({
+      ...obj,
+      progress: 0
+    }));
+    
     // In a real app, this would save to database
     console.log("Creating new sprint:", data);
+    console.log("With objectives:", finalObjectives);
     
     // Store in localStorage for now
     const existingSprints = JSON.parse(localStorage.getItem('sprints') || '[]');
@@ -50,7 +89,7 @@ export function CreateSprintDialog({ open, onOpenChange }: CreateSprintDialogPro
       ...data,
       id: Date.now().toString(),
       createdAt: new Date().toISOString(),
-      objectives: [],
+      objectives: finalObjectives,
       progress: 0
     };
     
@@ -79,7 +118,25 @@ export function CreateSprintDialog({ open, onOpenChange }: CreateSprintDialogPro
         
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <SprintDetailsForm defaultValues={defaultValues} form={form} />
+            <Tabs value={activeTab} onValueChange={setActiveTab}>
+              <TabsList>
+                <TabsTrigger value="details">Details</TabsTrigger>
+                <TabsTrigger value="objectives">Objectives</TabsTrigger>
+              </TabsList>
+              
+              <TabsContent value="details" className="space-y-6 mt-6">
+                <SprintDetailsForm defaultValues={defaultValues} form={form} />
+              </TabsContent>
+              
+              <TabsContent value="objectives" className="space-y-6 mt-6">
+                <SprintObjectivesSection
+                  objectives={objectives}
+                  onAddObjective={handleAddObjective}
+                  onRemoveObjective={handleRemoveObjective}
+                  onUpdateObjective={handleUpdateObjective}
+                />
+              </TabsContent>
+            </Tabs>
             
             <div className="flex justify-end gap-2">
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
