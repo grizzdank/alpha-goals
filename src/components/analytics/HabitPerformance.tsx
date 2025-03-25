@@ -96,7 +96,7 @@ const CustomPieTooltip = ({ active, payload }: any) => {
 const CustomLegend = (props: any) => {
   const { payload } = props;
   return (
-    <ul className="flex justify-center space-x-4 mt-2">
+    <ul className="flex justify-center space-x-4 mt-4">
       {payload.map((entry: any, index: number) => (
         <li key={`item-${index}`} className="flex items-center">
           <div 
@@ -183,14 +183,14 @@ export const HabitPerformance = () => {
             <CardDescription>Distribution of completed vs missed habits</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="h-[300px] w-full">
+            <div className="h-[350px] w-full flex flex-col justify-center"> {/* Increased height and added flex centering */}
               <ChartContainer config={{}}>
                 <ResponsiveContainer width="100%" height="100%">
-                  <PieChart margin={{ top: 10, right: 10, bottom: 40, left: 10 }}>
+                  <PieChart margin={{ top: 20, right: 10, bottom: 20, left: 10 }}> {/* Adjusted margins */}
                     <Pie
                       data={statusDistributionData}
                       cx="50%"
-                      cy="45%"
+                      cy="50%" {/* Centered vertically */}
                       labelLine={false}
                       outerRadius={80}
                       fill="#8884d8"
@@ -206,7 +206,7 @@ export const HabitPerformance = () => {
                       content={<CustomLegend />} 
                       verticalAlign="bottom"
                       align="center"
-                      wrapperStyle={{ bottom: 0 }}
+                      wrapperStyle={{ marginTop: 20 }}
                     />
                   </PieChart>
                 </ResponsiveContainer>
