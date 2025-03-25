@@ -178,13 +178,14 @@ export function HabitsList() {
     toast.success("Habit updated successfully");
   };
   
+  // Filter habits based on the selected filter
   const filteredHabits = habits.filter(habit => {
     if (filter === "active") return habit.active;
     if (filter === "inactive") return !habit.active;
     return true;
   });
   
-  // Add new function to mark habit completion for today
+  // Mark habit completion for today
   const markHabitCompletion = (habitId, completed) => {
     const today = new Date().toISOString().split('T')[0];
     
@@ -251,6 +252,7 @@ export function HabitsList() {
               onEdit={handleEditClick}
               onDelete={handleDeleteClick}
               onTogglePin={togglePinned}
+              onMarkCompleted={markHabitCompletion}
               getDomainIcon={getDomainIcon}
               getDomainColorClass={getDomainColorClass}
             />
