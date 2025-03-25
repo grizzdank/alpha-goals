@@ -1,9 +1,11 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Award, Calendar, CheckCircle } from "lucide-react";
+import { Award, Calendar, CheckCircle, Edit, ListChecks } from "lucide-react";
 import { calculateAnimationDelay } from "@/utils/animations";
+import { AnnualChallengeForm } from "./AnnualChallengeForm";
+import { toast } from "sonner";
 
 interface MilestoneProps {
   title: string;
@@ -19,14 +21,29 @@ interface AnnualChallengeProps {
     progress: number;
     domains: string[];
     milestones: MilestoneProps[];
+    vision?: string;
+    purpose?: string;
+    prepSteps?: string[];
   };
+  setChallenge: (challenge: any) => void;
   getCategoryColor: (categoryId: string) => string;
 }
 
 export const AnnualChallenge: React.FC<AnnualChallengeProps> = ({ 
   challenge, 
+  setChallenge,
   getCategoryColor 
 }) => {
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  
+  const handleEditChallenge = (updatedChallenge: any) => {
+    setChallenge({
+      ...challenge,
+      ...updatedChallenge
+    });
+    toast.success("Annual challenge updated successfully!");
+  };
+  
   return (
     <>
       <div className="glass rounded-xl md:rounded-2xl p-6 mb-6 animate-fade-in" style={{ animationDelay: calculateAnimationDelay(0) }}>
@@ -35,8 +52,30 @@ export const AnnualChallenge: React.FC<AnnualChallengeProps> = ({
             <div className="flex items-center gap-2 mb-2">
               <Award className="h-6 w-6 text-amber-500" />
               <h2 className="text-xl font-bold">{challenge.title}</h2>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="ml-2 h-8 w-8"
+                onClick={() => setIsEditDialogOpen(true)}
+              >
+                <Edit className="h-4 w-4" />
+              </Button>
             </div>
             <p className="text-muted-foreground">{challenge.description}</p>
+            
+            {challenge.vision && (
+              <div className="mt-4 bg-primary/10 rounded-lg p-3">
+                <p className="font-medium">This year I will...</p>
+                <p className="text-sm mt-1">{challenge.vision}</p>
+              </div>
+            )}
+            
+            {challenge.purpose && (
+              <div className="mt-3 bg-secondary/10 rounded-lg p-3">
+                <p className="font-medium">This is important because...</p>
+                <p className="text-sm mt-1">{challenge.purpose}</p>
+              </div>
+            )}
             
             <div className="flex flex-wrap gap-2 mt-4">
               {challenge.domains.map((domain) => (
@@ -62,6 +101,25 @@ export const AnnualChallenge: React.FC<AnnualChallengeProps> = ({
           </div>
         </div>
         
+        {challenge.prepSteps && challenge.prepSteps.length > 0 && (
+          <div className="mb-6">
+            <div className="flex items-center gap-2 mb-3">
+              <ListChecks className="h-5 w-5 text-primary" />
+              <h3 className="font-medium">Preparation Steps</h3>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {challenge.prepSteps.map((step, index) => (
+                <div key={index} className="flex items-start gap-2 bg-accent/20 p-3 rounded-md">
+                  <span className="bg-primary/20 text-primary h-6 w-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                    {index + 1}
+                  </span>
+                  <p className="text-sm">{step}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+        
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {challenge.milestones.map((milestone, index) => (
             <div 
@@ -78,6 +136,22 @@ export const AnnualChallenge: React.FC<AnnualChallengeProps> = ({
       </div>
       
       <Button className="mb-6">Update Annual Challenge Progress</Button>
+      
+      {/* Edit Annual Challenge Dialog */}
+      <AnnualChallengeForm
+        challenge={{
+          title: challenge.title,
+          description: challenge.description,
+          vision: challenge.vision || "",
+          purpose: challenge.purpose || "",
+          prepSteps: challenge.prepSteps || ["", "", ""],
+          startDate: challenge.startDate,
+          endDate: challenge.endDate
+        }}
+        open={isEditDialogOpen}
+        onOpenChange={setIsEditDialogOpen}
+        onSubmit={handleEditChallenge}
+      />
     </>
   );
 };
