@@ -7,12 +7,14 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import { CalendarDays } from "lucide-react";
 import { ChallengeFormBasicFields } from "./challenge-form/ChallengeFormBasicFields";
 import { ChallengeFormSuccessCriteria } from "./challenge-form/ChallengeFormSuccessCriteria";
 import { ChallengeFormDateFields } from "./challenge-form/ChallengeFormDateFields";
 import { ChallengeFormActions } from "./challenge-form/ChallengeFormActions";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface MonthlyChallengeFormValues {
   id?: number;
@@ -69,22 +71,29 @@ export function MonthlyChallengeForm({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[550px]">
+      <DialogContent className="sm:max-w-[550px] max-h-[90vh] md:max-h-none overflow-hidden">
         <DialogHeader>
           <div className="flex items-center gap-2">
             <CalendarDays className="h-5 w-5 text-primary" />
             <DialogTitle>{challenge?.id ? "Edit" : "Create"} Monthly Challenge</DialogTitle>
           </div>
+          <DialogDescription>
+            Set a challenge for yourself to complete within the month
+          </DialogDescription>
         </DialogHeader>
         
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-            <ChallengeFormBasicFields control={form.control} categories={categories} />
-            <ChallengeFormSuccessCriteria control={form.control} />
-            <ChallengeFormDateFields control={form.control} />
-            <ChallengeFormActions isEditing={!!challenge?.id} />
-          </form>
-        </Form>
+        <ScrollArea className="max-h-[calc(90vh-8rem)] md:max-h-none">
+          <div className="px-1 py-2">
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+                <ChallengeFormBasicFields control={form.control} categories={categories} />
+                <ChallengeFormSuccessCriteria control={form.control} />
+                <ChallengeFormDateFields control={form.control} />
+                <ChallengeFormActions isEditing={!!challenge?.id} />
+              </form>
+            </Form>
+          </div>
+        </ScrollArea>
       </DialogContent>
     </Dialog>
   );

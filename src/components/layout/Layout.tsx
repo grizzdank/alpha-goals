@@ -9,6 +9,7 @@ import {
   SheetContent,
   SheetTrigger
 } from "@/components/ui/sheet";
+import { Toaster } from "@/components/ui/toaster";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -44,6 +45,7 @@ export const Layout: React.FC<LayoutProps> = ({
         {!isMobile && <Sidebar className="h-[calc(100vh-4rem)] sticky top-16" />}
         <main className="flex-1 p-3 md:p-6 w-full overflow-x-hidden">{children}</main>
       </div>
+      <Toaster />
     </div>
   );
 };
