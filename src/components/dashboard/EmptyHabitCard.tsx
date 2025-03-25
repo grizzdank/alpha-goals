@@ -12,7 +12,7 @@ export function EmptyHabitCard() {
         No habit is currently pinned to your dashboard.
       </p>
       <Button asChild>
-        <Link to="/habits">
+        <Link to="/habits?tab=new">
           <Plus className="h-4 w-4 mr-1" />
           Pin a Habit
         </Link>
