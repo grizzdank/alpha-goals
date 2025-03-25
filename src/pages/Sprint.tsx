@@ -1,9 +1,10 @@
 
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { Navbar } from "@/components/layout/Navbar";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { Menu } from "lucide-react";
+import { Menu, ChevronRight, Pencil } from "lucide-react";
 import { 
   Sheet,
   SheetContent,
@@ -11,13 +12,17 @@ import {
 } from "@/components/ui/sheet";
 import { CurrentSprint } from "@/components/mission/CurrentSprint";
 import { SprintEdit } from "@/components/sprint/SprintEdit";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 
 const Sprint = () => {
   const isMobile = useIsMobile();
-  const [activeTab, setActiveTab] = useState("overview");
+  const [isEditing, setIsEditing] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  const toggleEdit = () => {
+    setIsEditing(!isEditing);
+  };
 
   return (
     <div className="flex min-h-screen flex-col md:flex-row">
@@ -47,23 +52,49 @@ const Sprint = () => {
         <main className="flex-1 px-4 py-6 md:px-6 md:py-8">
           <div className="max-w-7xl mx-auto animate-fade-in">
             <div className="mb-6">
-              <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                <TabsList className={`grid w-full ${isMobile ? "" : "max-w-md"} grid-cols-2`}>
-                  <TabsTrigger value="overview">Sprint Overview</TabsTrigger>
-                  <TabsTrigger value="edit">Edit Sprint</TabsTrigger>
-                </TabsList>
-                <TabsContent value="overview" className="mt-4">
-                  <div className="mb-3 flex justify-end">
-                    <Badge variant="secondary" className="bg-muted/50">
-                      Current Sprint
-                    </Badge>
+              {isEditing ? (
+                <div>
+                  <div className="mb-4 flex items-center justify-between">
+                    <h2 className="text-2xl font-bold">Edit Sprint</h2>
+                    <Button variant="outline" onClick={toggleEdit}>
+                      Cancel
+                    </Button>
+                  </div>
+                  <SprintEdit onComplete={toggleEdit} />
+                </div>
+              ) : (
+                <div>
+                  <div className="mb-4 flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      <Badge variant="secondary" className="bg-muted/50">
+                        Current Sprint
+                      </Badge>
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        onClick={toggleEdit} 
+                        className="h-8 w-8"
+                        title="Edit Sprint"
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    <Link to="/sprints/next">
+                      <Button variant="outline" size="sm" className="flex items-center gap-1">
+                        Next Sprint <ChevronRight className="h-4 w-4" />
+                      </Button>
+                    </Link>
                   </div>
                   <CurrentSprint />
-                </TabsContent>
-                <TabsContent value="edit" className="mt-4">
-                  <SprintEdit />
-                </TabsContent>
-              </Tabs>
+                  <div className="mt-4 text-center">
+                    <Link to="/sprints">
+                      <Button variant="link" className="text-primary">
+                        View all sprints
+                      </Button>
+                    </Link>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </main>

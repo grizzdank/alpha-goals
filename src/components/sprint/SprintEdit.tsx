@@ -47,7 +47,11 @@ type Objective = {
   progress: number;
 };
 
-export function SprintEdit() {
+interface SprintEditProps {
+  onComplete?: () => void;
+}
+
+export function SprintEdit({ onComplete }: SprintEditProps = {}) {
   // Sample initial data - in a real app, this would come from a database
   const [objectives, setObjectives] = useState<Objective[]>([
     {
@@ -87,6 +91,10 @@ export function SprintEdit() {
     console.log("Sprint updated:", values);
     console.log("Objectives:", objectives);
     toast.success("Sprint updated successfully");
+    
+    if (onComplete) {
+      onComplete();
+    }
   };
 
   // Add a new objective
@@ -260,10 +268,21 @@ export function SprintEdit() {
                 </div>
               </div>
 
-              <Button type="submit" className="w-full sm:w-auto flex items-center gap-2">
-                <Save className="h-4 w-4" />
-                Save Sprint
-              </Button>
+              <div className="flex justify-between">
+                {onComplete && (
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    onClick={onComplete}
+                  >
+                    Cancel
+                  </Button>
+                )}
+                <Button type="submit" className="flex items-center gap-2">
+                  <Save className="h-4 w-4" />
+                  Save Sprint
+                </Button>
+              </div>
             </form>
           </Form>
         </CardContent>
