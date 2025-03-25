@@ -1,7 +1,7 @@
-
 import React, { useEffect, useState } from "react";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { Navbar } from "@/components/layout/Navbar";
+import { DailyHabitCard } from "@/components/dashboard/DailyHabitCard";
 import { AlphaScoreCard } from "@/components/dashboard/AlphaScoreCard";
 import { MissionCard } from "@/components/dashboard/MissionCard";
 import { FinancialCard } from "@/components/dashboard/FinancialCard";
@@ -35,6 +35,22 @@ const Index = () => {
       { category: "body" as const, score: 68, label: "Body" },
       { category: "mind" as const, score: 79, label: "Mind" },
     ],
+  };
+
+  // Sample daily habit data
+  const dailyHabitData = {
+    id: 1,
+    title: "20-minute meditation",
+    description: "Mindfulness practice every morning to start the day centered",
+    streak: 5,
+    days: [
+      { date: "2023-07-01", completed: true },
+      { date: "2023-07-02", completed: true },
+      { date: "2023-07-03", completed: true },
+      { date: "2023-07-04", completed: true },
+      { date: "2023-07-05", completed: true },
+      { date: new Date().toISOString().split('T')[0], completed: false }
+    ]
   };
 
   // Upcoming activities
@@ -99,28 +115,34 @@ const Index = () => {
             <div className="max-w-7xl mx-auto animate-fade-in">
               {/* Dashboard Grid - Mobile */}
               <div className="space-y-6 mb-6">
-                <AlphaScoreCard 
+                <DailyHabitCard 
                   className="animate-fade-in"
                   style={{ animationDelay: calculateAnimationDelay(0) }}
+                  currentHabit={dailyHabitData}
+                />
+                
+                <AlphaScoreCard 
+                  className="animate-fade-in"
+                  style={{ animationDelay: calculateAnimationDelay(1) }}
                   totalScore={alphaScoreData.totalScore}
                   categoryScores={alphaScoreData.categoryScores}
                 />
                 
                 <MissionCard 
                   className="animate-fade-in"
-                  style={{ animationDelay: calculateAnimationDelay(1) }}
+                  style={{ animationDelay: calculateAnimationDelay(2) }}
                 />
                 
                 <FinancialCard 
                   className="animate-fade-in"
-                  style={{ animationDelay: calculateAnimationDelay(2) }}
+                  style={{ animationDelay: calculateAnimationDelay(3) }}
                 />
               </div>
               
               {/* Upcoming Activities */}
               <div 
                 className="glass rounded-2xl p-4 animate-fade-in" 
-                style={{ animationDelay: calculateAnimationDelay(3) }}
+                style={{ animationDelay: calculateAnimationDelay(4) }}
               >
                 <h2 className="text-lg font-semibold mb-4">Upcoming Activities</h2>
                 
@@ -129,7 +151,7 @@ const Index = () => {
                     <div 
                       key={activity.id}
                       className="bg-white/40 rounded-xl p-4 border border-white/30 hover-lift animate-fade-in"
-                      style={{ animationDelay: calculateAnimationDelay(index + 4, 50) }}
+                      style={{ animationDelay: calculateAnimationDelay(index + 5, 50) }}
                     >
                       <div className="flex items-start">
                         <div className={`p-2 rounded-lg ${activity.color} mr-3`}>
@@ -166,9 +188,15 @@ const Index = () => {
               >
                 {/* Dashboard Grid - Desktop */}
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                  <DailyHabitCard 
+                    className="lg:col-span-3 animate-fade-in"
+                    style={{ animationDelay: calculateAnimationDelay(0) }}
+                    currentHabit={dailyHabitData}
+                  />
+                  
                   <AlphaScoreCard 
                     className="lg:col-span-2 animate-fade-in"
-                    style={{ animationDelay: calculateAnimationDelay(0) }}
+                    style={{ animationDelay: calculateAnimationDelay(1) }}
                     totalScore={alphaScoreData.totalScore}
                     categoryScores={alphaScoreData.categoryScores}
                   />
@@ -176,12 +204,12 @@ const Index = () => {
                   <div className="flex flex-col space-y-6">
                     <MissionCard 
                       className="flex-1 animate-fade-in"
-                      style={{ animationDelay: calculateAnimationDelay(1) }}
+                      style={{ animationDelay: calculateAnimationDelay(2) }}
                     />
                     
                     <FinancialCard 
                       className="flex-1 animate-fade-in"
-                      style={{ animationDelay: calculateAnimationDelay(2) }}
+                      style={{ animationDelay: calculateAnimationDelay(3) }}
                     />
                   </div>
                 </div>
@@ -189,7 +217,7 @@ const Index = () => {
                 {/* Upcoming Activities */}
                 <div 
                   className="glass rounded-2xl p-6 animate-fade-in" 
-                  style={{ animationDelay: calculateAnimationDelay(3) }}
+                  style={{ animationDelay: calculateAnimationDelay(4) }}
                 >
                   <h2 className="text-lg font-semibold mb-4">Upcoming Activities</h2>
                   
@@ -198,7 +226,7 @@ const Index = () => {
                       <div 
                         key={activity.id}
                         className="bg-white/40 rounded-xl p-4 border border-white/30 hover-lift animate-fade-in"
-                        style={{ animationDelay: calculateAnimationDelay(index + 4, 50) }}
+                        style={{ animationDelay: calculateAnimationDelay(index + 5, 50) }}
                       >
                         <div className="flex items-start">
                           <div className={`p-2 rounded-lg ${activity.color} mr-3`}>
