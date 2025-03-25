@@ -15,7 +15,7 @@ interface NavbarProps {
   children?: React.ReactNode;
 }
 
-export function Navbar({ title = "Mission Planner Pro", subtitle, children }: NavbarProps) {
+export function Navbar({ title = "Alpha Goals", subtitle, children }: NavbarProps) {
   const { user, profile, signOut } = useAuth();
   
   const getInitials = () => {
