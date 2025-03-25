@@ -27,7 +27,6 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { HabitForm } from "@/components/sprint/HabitForm";
 
-// Sample habit data - in a real app, this would come from a database or state management
 const sampleHabits = [
   {
     id: 1,
@@ -87,9 +86,8 @@ export function HabitsList() {
   const [habitToEdit, setHabitToEdit] = useState(null);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showEditDialog, setShowEditDialog] = useState(false);
-  const [filter, setFilter] = useState("all"); // all, active, inactive
-  
-  // Load habits from localStorage or use sample data
+  const [filter, setFilter] = useState("all");
+
   useEffect(() => {
     const storedHabits = localStorage.getItem('habits');
     if (storedHabits) {
@@ -100,7 +98,6 @@ export function HabitsList() {
     }
   }, []);
 
-  // Save habits to localStorage whenever they change
   useEffect(() => {
     if (habits.length > 0) {
       localStorage.setItem('habits', JSON.stringify(habits));
@@ -110,7 +107,6 @@ export function HabitsList() {
   const activeHabitsCount = habits.filter(h => h.active).length;
   const inactiveHabitsCount = habits.filter(h => !h.active).length;
   
-  // Get domain icon
   const getDomainIcon = (domain) => {
     switch(domain) {
       case "mind":
@@ -126,7 +122,6 @@ export function HabitsList() {
     }
   };
   
-  // Get domain color class
   const getDomainColorClass = (domain) => {
     switch(domain) {
       case "mind":
@@ -142,13 +137,11 @@ export function HabitsList() {
     }
   };
   
-  // Handle toggle active status
   const toggleActive = (id) => {
     setHabits(habits.map(habit => {
       if (habit.id === id) {
         const newActive = !habit.active;
         
-        // Show appropriate toast
         if (newActive) {
           toast.success("Habit activated");
         } else {
@@ -161,19 +154,16 @@ export function HabitsList() {
     }));
   };
   
-  // Handle delete button click
   const handleDeleteClick = (habit) => {
     setHabitToDelete(habit);
     setShowDeleteDialog(true);
   };
 
-  // Handle edit button click
   const handleEditClick = (habit) => {
     setHabitToEdit(habit);
     setShowEditDialog(true);
   };
   
-  // Handle pin/unpin habit
   const togglePinned = (habit) => {
     const updatedHabits = habits.map(h => ({
       ...h,
@@ -182,7 +172,6 @@ export function HabitsList() {
     
     setHabits(updatedHabits);
     
-    // Show appropriate toast
     if (!habit.isPinned) {
       toast.success(`"${habit.title}" pinned to dashboard`);
     } else {
@@ -190,7 +179,6 @@ export function HabitsList() {
     }
   };
   
-  // Confirm habit deletion
   const confirmDelete = () => {
     if (habitToDelete) {
       setHabits(habits.filter(h => h.id !== habitToDelete.id));
@@ -200,7 +188,6 @@ export function HabitsList() {
     }
   };
   
-  // Handle save edited habit
   const handleSaveEdit = (updatedHabit) => {
     setHabits(habits.map(habit => 
       habit.id === updatedHabit.id ? updatedHabit : habit
@@ -210,11 +197,10 @@ export function HabitsList() {
     toast.success("Habit updated successfully");
   };
   
-  // Filter habits based on selected filter
   const filteredHabits = habits.filter(habit => {
     if (filter === "active") return habit.active;
     if (filter === "inactive") return !habit.active;
-    return true; // "all" filter
+    return true;
   });
   
   return (
@@ -335,7 +321,7 @@ export function HabitsList() {
                 <Button 
                   variant="ghost" 
                   size="sm"
-                  className="text-destructive hover:text-destructive gap-1"
+                  className="text-destructive hover:text-destructive hover:bg-destructive/10 dark:text-red-400 dark:hover:text-red-300 dark:hover:bg-red-900/30 gap-1"
                   onClick={() => handleDeleteClick(habit)}
                 >
                   <Trash2 className="h-4 w-4" />
@@ -347,7 +333,6 @@ export function HabitsList() {
         </div>
       )}
       
-      {/* Delete Confirmation Dialog */}
       <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <DialogContent>
           <DialogHeader>
@@ -367,7 +352,6 @@ export function HabitsList() {
         </DialogContent>
       </Dialog>
 
-      {/* Edit Habit Dialog */}
       <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
