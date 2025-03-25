@@ -10,7 +10,8 @@ import {
   DollarSign, 
   Settings, 
   ChevronLeft, 
-  ChevronRight 
+  ChevronRight,
+  ListChecks
 } from 'lucide-react';
 
 const navItems = [
@@ -31,6 +32,12 @@ const navItems = [
     icon: Calendar, 
     path: '/sprints',
     description: 'Manage 90-day sprints and challenges'
+  },
+  { 
+    name: 'Habits', 
+    icon: ListChecks, 
+    path: '/habits',
+    description: 'Manage your daily habits'
   },
   { 
     name: 'Analytics', 
