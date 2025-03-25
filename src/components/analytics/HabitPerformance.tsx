@@ -26,9 +26,10 @@ const habitCompletionData = [
   { habit: "Networking", completed: 15, missed: 15 },
 ];
 
-// Process data for the chart
+// Process data for the chart - shortened habit names for better display
 const habitChartData = habitCompletionData.map(item => ({
-  name: item.habit,
+  name: item.habit.length > 10 ? item.habit.substring(0, 10) + "..." : item.habit,
+  fullName: item.habit, // Keep full name for tooltip
   completed: (item.completed / (item.completed + item.missed)) * 100,
   missed: (item.missed / (item.completed + item.missed)) * 100,
 }));
@@ -58,6 +59,57 @@ const chartConfig = {
   }
 };
 
+// Custom tooltip to show full habit name
+const CustomBarTooltip = ({ active, payload, label }: any) => {
+  if (active && payload && payload.length) {
+    const habit = payload[0]?.payload?.fullName || label;
+    return (
+      <div className="bg-background border border-border p-2 rounded-md shadow-md">
+        <p className="font-medium">{habit}</p>
+        {payload.map((entry: any, index: number) => (
+          <p key={index} style={{ color: entry.color }}>
+            {entry.name}: {entry.value.toFixed(0)}%
+          </p>
+        ))}
+      </div>
+    );
+  }
+  return null;
+};
+
+// Custom tooltip for pie chart
+const CustomPieTooltip = ({ active, payload }: any) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-background border border-border p-2 rounded-md shadow-md">
+        <p className="font-medium">{payload[0].name}</p>
+        <p style={{ color: payload[0].payload.color }}>
+          Count: {payload[0].value}
+        </p>
+      </div>
+    );
+  }
+  return null;
+};
+
+// Custom legend renderer for pie chart
+const CustomLegend = (props: any) => {
+  const { payload } = props;
+  return (
+    <ul className="flex justify-center space-x-4 mt-2">
+      {payload.map((entry: any, index: number) => (
+        <li key={`item-${index}`} className="flex items-center">
+          <div 
+            className="w-3 h-3 mr-2 rounded-sm" 
+            style={{ backgroundColor: entry.color }}
+          />
+          <span className="text-xs">{entry.value}</span>
+        </li>
+      ))}
+    </ul>
+  );
+};
+
 export const HabitPerformance = () => {
   return (
     <div className="space-y-6">
@@ -70,7 +122,7 @@ export const HabitPerformance = () => {
           <CardDescription>Percentage of completion for each habit</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="h-[350px] w-full">
+          <div className="h-[400px] w-full">
             <ChartContainer config={chartConfig}>
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart
@@ -79,8 +131,9 @@ export const HabitPerformance = () => {
                     top: 20,
                     right: 30,
                     left: 20,
-                    bottom: 60,
+                    bottom: 70,
                   }}
+                  barSize={40}
                 >
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis 
@@ -88,6 +141,8 @@ export const HabitPerformance = () => {
                     tick={{ fontSize: 12 }}
                     angle={-45}
                     textAnchor="end"
+                    height={70}
+                    interval={0}
                   />
                   <YAxis 
                     tick={{ fontSize: 12 }}
@@ -95,11 +150,12 @@ export const HabitPerformance = () => {
                     label={{ 
                       value: 'Percentage (%)', 
                       angle: -90, 
-                      position: 'insideLeft' 
+                      position: 'insideLeft',
+                      style: { textAnchor: 'middle' }
                     }}
                   />
-                  <Tooltip />
-                  <Legend />
+                  <Tooltip content={<CustomBarTooltip />} />
+                  <Legend wrapperStyle={{ paddingTop: 20 }} />
                   <Bar 
                     dataKey="completed" 
                     name="Completed %" 
@@ -130,25 +186,28 @@ export const HabitPerformance = () => {
             <div className="h-[300px] w-full">
               <ChartContainer config={{}}>
                 <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
+                  <PieChart margin={{ top: 10, right: 10, bottom: 40, left: 10 }}>
                     <Pie
                       data={statusDistributionData}
                       cx="50%"
-                      cy="50%"
+                      cy="45%"
                       labelLine={false}
-                      label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
                       outerRadius={80}
                       fill="#8884d8"
                       dataKey="value"
+                      label={({ name, percent }) => `${(percent * 100).toFixed(0)}%`}
                     >
                       {statusDistributionData.map((entry, index) => (
                         <Cell key={`cell-${index}`} fill={entry.color} />
                       ))}
                     </Pie>
-                    <Tooltip 
-                      formatter={(value) => [`${value} instances`, 'Count']}
+                    <Tooltip content={<CustomPieTooltip />} />
+                    <Legend 
+                      content={<CustomLegend />} 
+                      verticalAlign="bottom"
+                      align="center"
+                      wrapperStyle={{ bottom: 0 }}
                     />
-                    <Legend />
                   </PieChart>
                 </ResponsiveContainer>
               </ChartContainer>
