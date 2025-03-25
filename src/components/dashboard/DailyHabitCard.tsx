@@ -1,26 +1,18 @@
+
 import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
-import { CalendarDays, CheckCircle, Plus } from "lucide-react";
+import { CalendarDays, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { toast } from "sonner";
-
-interface HabitDay {
-  date: string;
-  completed: boolean;
-}
-
-interface Habit {
-  id: number;
-  title: string;
-  description: string;
-  streak: number;
-  isPinned?: boolean;
-  days?: HabitDay[];
-  domain?: "mind" | "body" | "purpose" | "relationships";
-  active?: boolean;
-}
+import { EmptyHabitCard } from "./EmptyHabitCard";
+import { HabitProgress } from "./HabitProgress";
+import { 
+  Habit, 
+  HabitDay, 
+  generateSampleDays, 
+  getDomainColors, 
+  toggleHabitCompletion 
+} from "@/utils/habitUtils";
 
 interface DailyHabitCardProps {
   className?: string;
@@ -63,138 +55,35 @@ export function DailyHabitCard({ className = "", style }: DailyHabitCardProps) {
     }
   }, [today]);
   
-  // Generate sample days for habits that don't have day data
-  const generateSampleDays = (streak: number): HabitDay[] => {
-    const days: HabitDay[] = [];
-    const currentDate = new Date();
-    
-    // Add completed days for the streak
-    for (let i = 0; i < streak; i++) {
-      const date = new Date(currentDate);
-      date.setDate(date.getDate() - (i + 1));
-      days.push({
-        date: date.toISOString().split('T')[0],
-        completed: true
-      });
-    }
-    
-    // Add today as not completed
-    days.push({
-      date: today,
-      completed: false
-    });
-    
-    return days.reverse();
-  };
-  
   // Handle toggle habit completion
   const handleToggleHabit = () => {
     if (!activeHabit) return;
     
-    // Find today's record or create it
-    const dayIndex = habitDays.findIndex(day => day.date === today);
-    const updatedDays = [...habitDays];
-    
-    if (dayIndex >= 0) {
-      // Toggle existing day
-      updatedDays[dayIndex] = { 
-        ...updatedDays[dayIndex], 
-        completed: !updatedDays[dayIndex].completed 
-      };
-    } else {
-      // Add today if it doesn't exist
-      updatedDays.push({ date: today, completed: true });
-    }
-    
-    setHabitDays(updatedDays);
-    
-    // Update habit streak
-    let newStreak = activeHabit.streak;
-    const isCompleted = dayIndex >= 0 ? !habitDays[dayIndex].completed : true;
-    
-    if (isCompleted) {
-      newStreak += 1;
-      toast.success(`${activeHabit.title} completed`);
-    } else {
-      newStreak = Math.max(0, newStreak - 1);
-      toast.info(`${activeHabit.title} unmarked`);
-    }
-    
-    // Update the active habit with new streak and days
-    const updatedHabit = {
-      ...activeHabit,
-      streak: newStreak,
-      days: updatedDays
-    };
-    
-    // Update the habit in the habits array
-    const updatedHabits = habits.map(h => 
-      h.id === activeHabit.id ? updatedHabit : h
-    );
-    
-    setHabits(updatedHabits);
-    setActiveHabit(updatedHabit);
-    
-    // Save to localStorage
-    localStorage.setItem('habits', JSON.stringify(updatedHabits));
+    toggleHabitCompletion(activeHabit, habitDays, (updatedHabit, updatedDays) => {
+      // Update state
+      setHabitDays(updatedDays);
+      setActiveHabit(updatedHabit);
+      
+      // Update the habit in the habits array
+      const updatedHabits = habits.map(h => 
+        h.id === activeHabit.id ? updatedHabit : h
+      );
+      
+      setHabits(updatedHabits);
+      
+      // Save to localStorage
+      localStorage.setItem('habits', JSON.stringify(updatedHabits));
+    });
   };
   
   // Get domain from habit or default to "mind"
   const domain = activeHabit?.domain || "mind";
   
-  // Map domain to appropriate color classes
-  const domainColorMap = {
-    mind: {
-      bg: "bg-mind/10",
-      text: "text-mind",
-      iconBg: "bg-mind/20",
-      pill: "bg-mind/10 text-mind",
-      completed: "bg-mind/80",
-    },
-    body: {
-      bg: "bg-body/10",
-      text: "text-body",
-      iconBg: "bg-body/20",
-      pill: "bg-body/10 text-body",
-      completed: "bg-body/80",
-    },
-    purpose: {
-      bg: "bg-purpose/10",
-      text: "text-purpose",
-      iconBg: "bg-purpose/20",
-      pill: "bg-purpose/10 text-purpose",
-      completed: "bg-purpose/80",
-    },
-    relationships: {
-      bg: "bg-relationships/10",
-      text: "text-relationships",
-      iconBg: "bg-relationships/20",
-      pill: "bg-relationships/10 text-relationships",
-      completed: "bg-relationships/80",
-    }
-  };
-  
-  const getDomainColors = (habitDomain: string) => {
-    return domainColorMap[habitDomain as keyof typeof domainColorMap] || domainColorMap.mind;
-  };
-  
+  // Get domain colors
   const colors = getDomainColors(domain);
   
   // Find today's record
   const todayRecord = habitDays.find(day => day.date === today);
-  
-  // Get last 7 days for the habit calendar
-  const last7Days = [...Array(7)].map((_, i) => {
-    const d = new Date();
-    d.setDate(d.getDate() - i);
-    const dateString = d.toISOString().split('T')[0];
-    const day = habitDays.find(day => day.date === dateString);
-    return {
-      date: dateString,
-      dayName: d.toLocaleDateString('en-US', { weekday: 'short' }),
-      completed: day ? day.completed : false
-    };
-  }).reverse();
   
   // If no active habit is found
   if (!activeHabit) {
@@ -209,17 +98,7 @@ export function DailyHabitCard({ className = "", style }: DailyHabitCardProps) {
           </div>
         </CardHeader>
         
-        <CardContent className="p-4 md:p-6 flex flex-col items-center justify-center text-center">
-          <p className="text-muted-foreground mb-4">
-            No habit is currently pinned to your dashboard.
-          </p>
-          <Button asChild>
-            <Link to="/habits">
-              <Plus className="h-4 w-4 mr-1" />
-              Pin a Habit
-            </Link>
-          </Button>
-        </CardContent>
+        <EmptyHabitCard />
       </Card>
     );
   }
@@ -250,39 +129,13 @@ export function DailyHabitCard({ className = "", style }: DailyHabitCardProps) {
           </div>
         </div>
         
-        <div className="border border-border/40 rounded-lg p-4 mb-4">
-          <div className="flex items-center justify-between mb-3">
-            <h4 className="font-medium">Today's Progress</h4>
-            <div className="flex items-center">
-              <Checkbox 
-                id={`today-habit-${activeHabit.id}`} 
-                checked={todayRecord?.completed || false}
-                onCheckedChange={handleToggleHabit}
-                className={`mr-2 data-[state=checked]:${colors.text} data-[state=checked]:border-${domain}`}
-              />
-              <label 
-                htmlFor={`today-habit-${activeHabit.id}`} 
-                className="text-sm cursor-pointer"
-              >
-                Mark as completed
-              </label>
-            </div>
-          </div>
-          
-          <div className="grid grid-cols-7 gap-1 mt-2">
-            {last7Days.map((day, i) => (
-              <div key={i} className="flex flex-col items-center">
-                <span className="text-xs text-muted-foreground mb-1">{day.dayName}</span>
-                <div 
-                  className={`h-8 w-8 rounded-full flex items-center justify-center text-xs
-                    ${day.completed ? `${colors.completed} text-white` : 'bg-gray-100 dark:bg-gray-800 text-muted-foreground'}`}
-                >
-                  {day.completed ? <CheckCircle className="h-4 w-4" /> : '-'}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+        <HabitProgress 
+          activeHabit={activeHabit}
+          habitDays={habitDays}
+          handleToggleHabit={handleToggleHabit}
+          todayCompleted={todayRecord?.completed || false}
+          colorClass={colors.completed}
+        />
         
         <div className="grid grid-cols-2 gap-3">
           <Button asChild variant="outline" className="w-full">
