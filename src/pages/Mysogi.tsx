@@ -4,7 +4,7 @@ import { useLocation } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { Calendar, FolderClock, Award, PlusCircle, Dumbbell, Brain, Heart, Target } from "lucide-react";
+import { Calendar, FolderClock, Award, PlusCircle, Dumbbell, Brain, Heart, Target, CheckCircle } from "lucide-react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { calculateAnimationDelay } from "@/utils/animations";
