@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
@@ -94,9 +93,8 @@ const Mysogi = () => {
       <div className="max-w-7xl mx-auto animate-fade-in">
         {/* Header description */}
         <div className="mb-6 p-4 bg-primary/10 rounded-lg border border-primary/20">
-          <p className="text-base md:text-lg text-primary-foreground/90">
-            A Mysogi is an annual event or challenge so demanding that it defines your year. 
-            This section helps you plan and prepare for this defining experience.
+          <p className="text-base md:text-lg text-foreground font-medium">
+            A Mysogi is an annual event or challenge so demanding that it defines your year.
           </p>
         </div>
 
