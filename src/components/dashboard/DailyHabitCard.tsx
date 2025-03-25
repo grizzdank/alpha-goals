@@ -1,34 +1,95 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import { CalendarDays, CheckCircle, Plus } from "lucide-react";
+import { CalendarDays, CheckCircle, Plus, Pin, PinOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import { toast } from "sonner";
 
 interface HabitDay {
   date: string;
   completed: boolean;
 }
 
+interface Habit {
+  id: number;
+  title: string;
+  description: string;
+  streak: number;
+  days: HabitDay[];
+  domain?: "mind" | "body" | "purpose" | "relationships";
+}
+
 interface DailyHabitCardProps {
   className?: string;
   style?: React.CSSProperties;
-  currentHabit: {
-    id: number;
-    title: string;
-    description: string;
-    streak: number;
-    days: HabitDay[];
-    domain?: "mind" | "body" | "purpose" | "relationships";
-  };
+  currentHabit: Habit;
 }
 
 export function DailyHabitCard({ className = "", style, currentHabit }: DailyHabitCardProps) {
-  const [habit, setHabit] = useState(currentHabit);
+  // State for all habits and pinned habit
+  const [habits, setHabits] = useState<Habit[]>([]);
+  const [pinnedHabitId, setPinnedHabitId] = useState<number | null>(null);
+  const [activeHabit, setActiveHabit] = useState<Habit>(currentHabit);
+  
+  // Get today's date
+  const today = new Date().toISOString().split('T')[0];
+  
+  // Sample habits data - in a real app, this would come from an API or store
+  useEffect(() => {
+    // Include the current habit and add some other sample habits
+    const sampleHabits = [
+      currentHabit,
+      {
+        id: 100,
+        title: "30-minute workout",
+        description: "Daily strength or cardio exercise",
+        streak: 3,
+        domain: "body" as const,
+        days: [
+          { date: "2023-07-03", completed: true },
+          { date: "2023-07-04", completed: true },
+          { date: "2023-07-05", completed: true },
+          { date: today, completed: false }
+        ]
+      },
+      {
+        id: 101,
+        title: "Reading",
+        description: "Read 20 pages of a book",
+        streak: 7,
+        domain: "mind" as const,
+        days: [
+          { date: "2023-07-01", completed: true },
+          { date: "2023-07-02", completed: true },
+          { date: "2023-07-03", completed: true },
+          { date: "2023-07-04", completed: true },
+          { date: "2023-07-05", completed: true },
+          { date: today, completed: false }
+        ]
+      }
+    ];
+    
+    setHabits(sampleHabits);
+    
+    // Set first habit as pinned by default if nothing is already pinned
+    const storedPinnedId = localStorage.getItem('pinnedHabitId');
+    if (storedPinnedId) {
+      const pinnedId = parseInt(storedPinnedId);
+      setPinnedHabitId(pinnedId);
+      const pinnedHabit = sampleHabits.find(h => h.id === pinnedId);
+      if (pinnedHabit) {
+        setActiveHabit(pinnedHabit);
+      }
+    } else {
+      setPinnedHabitId(currentHabit.id);
+      localStorage.setItem('pinnedHabitId', currentHabit.id.toString());
+    }
+  }, [currentHabit, today]);
   
   // Get domain from habit or default to "mind"
-  const domain = habit.domain || "mind";
+  const domain = activeHabit.domain || "mind";
   
   // Map domain to appropriate color classes
   const domainColorMap = {
@@ -62,43 +123,72 @@ export function DailyHabitCard({ className = "", style, currentHabit }: DailyHab
     }
   };
   
-  const colors = domainColorMap[domain];
+  const getDomainColors = (habitDomain: string) => {
+    return domainColorMap[habitDomain as keyof typeof domainColorMap] || domainColorMap.mind;
+  };
   
-  // Get current date formatted as YYYY-MM-DD
-  const today = new Date().toISOString().split('T')[0];
+  const colors = getDomainColors(domain);
   
-  // Find today's record
-  const todayRecord = habit.days.find(day => day.date === today);
+  // Find today's record for active habit
+  const todayRecord = activeHabit.days.find(day => day.date === today);
   
-  const handleToggleHabit = () => {
+  const handleToggleHabit = (habit: Habit) => {
     // Toggle the completion status for today
-    const updatedDays = habit.days.map(day => {
-      if (day.date === today) {
-        return { ...day, completed: !day.completed };
+    const updatedHabits = habits.map(h => {
+      if (h.id === habit.id) {
+        const dayIndex = h.days.findIndex(day => day.date === today);
+        const newDays = [...h.days];
+        
+        if (dayIndex >= 0) {
+          // Update existing day
+          newDays[dayIndex] = { 
+            ...newDays[dayIndex], 
+            completed: !newDays[dayIndex].completed 
+          };
+        } else {
+          // Add today if it doesn't exist
+          newDays.push({ date: today, completed: true });
+        }
+        
+        // Calculate new streak
+        let newStreak = h.streak;
+        if (dayIndex >= 0 && newDays[dayIndex].completed) {
+          // If was completed and now unmarked, reduce streak
+          newStreak = Math.max(0, newStreak - 1);
+        } else {
+          // If was not completed and now marked, increase streak
+          newStreak += 1;
+        }
+        
+        return { ...h, days: newDays, streak: newStreak };
       }
-      return day;
+      return h;
     });
     
-    // If today doesn't exist in the records yet, add it
-    if (!todayRecord) {
-      updatedDays.push({ date: today, completed: true });
+    setHabits(updatedHabits);
+    
+    // Update active habit if it's the one being toggled
+    if (habit.id === activeHabit.id) {
+      const updatedHabit = updatedHabits.find(h => h.id === habit.id);
+      if (updatedHabit) {
+        setActiveHabit(updatedHabit);
+      }
     }
     
-    // Calculate new streak
-    let newStreak = habit.streak;
-    if (todayRecord?.completed) {
-      // If was completed and now unmarked, reduce streak
-      newStreak = Math.max(0, newStreak - 1);
-    } else if (!todayRecord?.completed) {
-      // If was not completed and now marked, increase streak
-      newStreak += 1;
+    // Show toast
+    const isCompleted = !habit.days.find(day => day.date === today)?.completed;
+    if (isCompleted) {
+      toast.success(`${habit.title} completed`);
+    } else {
+      toast.info(`${habit.title} unmarked`);
     }
-    
-    setHabit({
-      ...habit,
-      days: updatedDays,
-      streak: newStreak
-    });
+  };
+  
+  const handlePinHabit = (habit: Habit) => {
+    setPinnedHabitId(habit.id);
+    setActiveHabit(habit);
+    localStorage.setItem('pinnedHabitId', habit.id.toString());
+    toast.success(`"${habit.title}" pinned to dashboard`);
   };
   
   // Get last 7 days for the habit calendar
@@ -106,7 +196,7 @@ export function DailyHabitCard({ className = "", style, currentHabit }: DailyHab
     const d = new Date();
     d.setDate(d.getDate() - i);
     const dateString = d.toISOString().split('T')[0];
-    const day = habit.days.find(day => day.date === dateString);
+    const day = activeHabit.days.find(day => day.date === dateString);
     return {
       date: dateString,
       dayName: d.toLocaleDateString('en-US', { weekday: 'short' }),
@@ -118,7 +208,7 @@ export function DailyHabitCard({ className = "", style, currentHabit }: DailyHab
     <Card className={`overflow-hidden hover-lift ${className}`} style={style}>
       <CardHeader className={`${colors.bg} p-4 md:p-6`}>
         <div className="flex justify-between items-center">
-          <CardTitle className={`text-lg md:text-xl ${colors.text}`}>Daily Habit</CardTitle>
+          <CardTitle className={`text-lg md:text-xl ${colors.text}`}>Daily Habits</CardTitle>
           <div className={`h-9 w-9 rounded-full ${colors.iconBg} flex items-center justify-center flex-shrink-0`}>
             <CalendarDays className={`h-5 w-5 ${colors.text}`} />
           </div>
@@ -126,28 +216,32 @@ export function DailyHabitCard({ className = "", style, currentHabit }: DailyHab
       </CardHeader>
       
       <CardContent className="p-4 md:p-6">
+        {/* Featured/Pinned Habit */}
         <div className="flex items-start justify-between mb-4">
           <div>
-            <h3 className="font-semibold text-lg">{habit.title}</h3>
-            <p className="text-muted-foreground text-sm mt-1">{habit.description}</p>
+            <div className="flex items-center gap-2">
+              <h3 className="font-semibold text-lg">{activeHabit.title}</h3>
+              <span className="text-xs text-muted-foreground">(Pinned)</span>
+            </div>
+            <p className="text-muted-foreground text-sm mt-1">{activeHabit.description}</p>
           </div>
           <div className={`${colors.pill} px-3 py-1 rounded-full text-sm font-medium`}>
-            {habit.streak} day streak
+            {activeHabit.streak} day streak
           </div>
         </div>
         
         <div className="border border-border/40 rounded-lg p-4 mb-4">
           <div className="flex items-center justify-between mb-3">
-            <h4 className="font-medium">Today's Habit</h4>
+            <h4 className="font-medium">Today's Progress</h4>
             <div className="flex items-center">
               <Checkbox 
-                id="today-habit" 
+                id={`today-habit-${activeHabit.id}`} 
                 checked={todayRecord?.completed || false}
-                onCheckedChange={handleToggleHabit}
+                onCheckedChange={() => handleToggleHabit(activeHabit)}
                 className={`mr-2 data-[state=checked]:${colors.text} data-[state=checked]:border-${domain}`}
               />
               <label 
-                htmlFor="today-habit" 
+                htmlFor={`today-habit-${activeHabit.id}`} 
                 className="text-sm cursor-pointer"
               >
                 Mark as completed
@@ -167,6 +261,50 @@ export function DailyHabitCard({ className = "", style, currentHabit }: DailyHab
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+        
+        {/* All Habits */}
+        <div className="border border-border/40 rounded-lg p-4 mb-4">
+          <h4 className="font-medium mb-3">All Active Habits</h4>
+          
+          <div className="space-y-2 max-h-40 overflow-y-auto">
+            {habits.filter(h => h.id !== activeHabit.id).map(habit => {
+              const habitColors = getDomainColors(habit.domain || "mind");
+              const habitTodayRecord = habit.days.find(day => day.date === today);
+              
+              return (
+                <div key={habit.id} className="flex items-center justify-between p-2 rounded-lg hover:bg-accent/50 transition-colors">
+                  <div className="flex items-center gap-3 flex-1">
+                    <Checkbox 
+                      id={`habit-${habit.id}`} 
+                      checked={habitTodayRecord?.completed || false}
+                      onCheckedChange={() => handleToggleHabit(habit)}
+                      className={`data-[state=checked]:${habitColors.text}`}
+                    />
+                    <div>
+                      <label htmlFor={`habit-${habit.id}`} className="text-sm font-medium cursor-pointer">
+                        {habit.title}
+                      </label>
+                      <div className="flex items-center gap-2">
+                        <span className={`text-xs ${habitColors.text}`}>{habit.streak} day streak</span>
+                        <span className={`inline-block w-2 h-2 rounded-full ${habitColors.completed}`}></span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="h-7 w-7"
+                    onClick={() => handlePinHabit(habit)}
+                    title="Pin to dashboard"
+                  >
+                    <Pin className="h-3.5 w-3.5" />
+                  </Button>
+                </div>
+              );
+            })}
           </div>
         </div>
         
