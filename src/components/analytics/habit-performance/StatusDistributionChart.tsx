@@ -41,10 +41,9 @@ export const StatusDistributionChart = () => {
                 </Pie>
                 <Tooltip content={<CustomPieTooltip />} />
                 <Legend 
-                  content={<CustomLegend />} 
+                  content={<CustomLegend />}
                   verticalAlign="bottom"
                   align="center"
-                  wrapperStyle={{ marginTop: 20 }}
                 />
               </PieChart>
             </ResponsiveContainer>
