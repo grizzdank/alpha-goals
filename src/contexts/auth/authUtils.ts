@@ -67,8 +67,8 @@ export const signInWithGoogle = async () => {
   }
 };
 
-export const signOut = async () => {
-  return await supabase.auth.signOut();
+export const signOut = async (): Promise<void> => {
+  await supabase.auth.signOut();
 };
 
 export const fetchProfile = async (userId: string) => {
