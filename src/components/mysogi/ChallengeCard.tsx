@@ -11,6 +11,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Challenge } from "./MonthlyChallenges";
+import { toast } from "sonner";
 
 interface ChallengeCardProps {
   challenge: Challenge;
@@ -34,6 +35,36 @@ export const ChallengeCard: React.FC<ChallengeCardProps> = ({
   onUpdateProgress
 }) => {
   const CategoryIcon = getCategoryIcon(challenge.category);
+  
+  const handleStartEarly = () => {
+    // Change status to active
+    const updatedChallenge = {
+      ...challenge,
+      status: "active",
+    };
+    onEdit(updatedChallenge);
+    toast.success("Challenge started early!");
+  };
+  
+  const handleViewDetails = () => {
+    // For completed challenges, display a toast with challenge details
+    toast.info(
+      <div className="space-y-2">
+        <h3 className="font-semibold text-base">{challenge.title}</h3>
+        <p className="text-sm">{challenge.description}</p>
+        {challenge.successCriteria && (
+          <p className="text-sm mt-2">
+            <span className="font-medium">Success criteria: </span>
+            {challenge.successCriteria}
+          </p>
+        )}
+        <p className="text-sm">Completed on: {challenge.endDate}</p>
+      </div>,
+      {
+        duration: 5000,
+      }
+    );
+  };
   
   return (
     <Card 
@@ -73,15 +104,38 @@ export const ChallengeCard: React.FC<ChallengeCardProps> = ({
       </CardContent>
       <CardFooter className="flex gap-2">
         {challenge.status === "active" && onUpdateProgress && (
-          <Button variant="outline" className="flex-1" onClick={() => onUpdateProgress(challenge)}>
+          <Button 
+            variant="outline" 
+            className="flex-1" 
+            onClick={(e) => {
+              e.stopPropagation();
+              onUpdateProgress(challenge);
+            }}
+          >
             Update Progress
           </Button>
         )}
         {challenge.status === "upcoming" && (
-          <Button variant="outline" className="flex-1">Start Early</Button>
+          <Button 
+            variant="outline" 
+            className="flex-1"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleStartEarly();
+            }}
+          >
+            Start Early
+          </Button>
         )}
         {challenge.status === "completed" && (
-          <Button variant="outline" className="flex-1">
+          <Button 
+            variant="outline" 
+            className="flex-1"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleViewDetails();
+            }}
+          >
             <Eye className="h-4 w-4 mr-2" />
             View Details
           </Button>

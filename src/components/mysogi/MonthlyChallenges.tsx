@@ -6,6 +6,7 @@ import { ChallengeCard } from "./ChallengeCard";
 import { Card } from "@/components/ui/card";
 import { calculateAnimationDelay } from "@/utils/animations";
 import { MonthlyChallengeForm } from "./MonthlyChallengeForm";
+import { ProgressUpdateDialog } from "./ProgressUpdateDialog";
 import { toast } from "sonner";
 
 export interface Challenge {
@@ -136,7 +137,15 @@ export const MonthlyChallenges: React.FC<MonthlyChallengesProps> = ({
         />
       )}
       
-      {/* Progress Update Form could be added here */}
+      {/* Progress Update Dialog */}
+      {selectedChallenge && (
+        <ProgressUpdateDialog
+          challenge={selectedChallenge}
+          open={isProgressDialogOpen}
+          onOpenChange={setIsProgressDialogOpen}
+          onUpdate={handleUpdateChallenge}
+        />
+      )}
     </>
   );
 };
