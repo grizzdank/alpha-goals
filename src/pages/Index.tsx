@@ -6,10 +6,13 @@ import { AlphaScoreCard } from "@/components/dashboard/AlphaScoreCard";
 import { MissionCard } from "@/components/dashboard/MissionCard";
 import { FinancialCard } from "@/components/dashboard/FinancialCard";
 import { calculateAnimationDelay } from "@/utils/animations";
-import { Calendar, CheckCircle, Target } from "lucide-react";
+import { Calendar, CheckCircle, ClipboardCheck, Target } from "lucide-react";
+import { WeeklyReview } from "@/components/review/WeeklyReview";
+import { Button } from "@/components/ui/button";
 
 const Index = () => {
   const [loading, setLoading] = useState(true);
+  const [showWeeklyReview, setShowWeeklyReview] = useState(false);
 
   // Simulate data loading
   useEffect(() => {
@@ -39,6 +42,7 @@ const Index = () => {
       date: "Today, 4:00 PM",
       icon: CheckCircle,
       color: "bg-purpose/10 text-purpose",
+      action: () => setShowWeeklyReview(true),
     },
     {
       id: 2,
@@ -101,10 +105,52 @@ const Index = () => {
           </div>
         </div>
         
+        {/* Weekly Review Card */}
+        <div 
+          className="glass rounded-2xl p-6 mb-8 animate-fade-in" 
+          style={{ animationDelay: calculateAnimationDelay(4) }}
+        >
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-lg bg-purpose/10 text-purpose">
+                <ClipboardCheck className="h-5 w-5" />
+              </div>
+              <div>
+                <h2 className="text-lg font-semibold">Weekly Review & Planning</h2>
+                <p className="text-sm text-muted-foreground">Reflect on your progress and plan for the week ahead</p>
+              </div>
+            </div>
+            <Button onClick={() => setShowWeeklyReview(true)}>
+              Start Weekly Review
+            </Button>
+          </div>
+          
+          <div className="bg-card/50 rounded-xl p-4 border border-border/50">
+            <div className="flex items-center gap-2 mb-2">
+              <CheckCircle className="h-4 w-4 text-green-500" />
+              <span className="text-sm font-medium">Benefits of Weekly Reviews:</span>
+            </div>
+            <ul className="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
+              <li className="flex items-center gap-2">
+                <div className="h-1.5 w-1.5 rounded-full bg-green-500"></div>
+                <span>Identify what's working & what's not</span>
+              </li>
+              <li className="flex items-center gap-2">
+                <div className="h-1.5 w-1.5 rounded-full bg-green-500"></div>
+                <span>Celebrate your wins to build momentum</span>
+              </li>
+              <li className="flex items-center gap-2">
+                <div className="h-1.5 w-1.5 rounded-full bg-green-500"></div>
+                <span>Adjust your strategies & tactics</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+        
         {/* Upcoming Activities */}
         <div 
           className="glass rounded-2xl p-6 animate-fade-in" 
-          style={{ animationDelay: calculateAnimationDelay(4) }}
+          style={{ animationDelay: calculateAnimationDelay(5) }}
         >
           <h2 className="text-lg font-semibold mb-4">Upcoming Activities</h2>
           
@@ -112,8 +158,9 @@ const Index = () => {
             {upcomingActivities.map((activity, index) => (
               <div 
                 key={activity.id}
-                className="bg-white/40 rounded-xl p-4 border border-white/30 hover-lift animate-fade-in"
-                style={{ animationDelay: calculateAnimationDelay(index + 5, 50) }}
+                className="bg-white/40 rounded-xl p-4 border border-white/30 hover-lift animate-fade-in cursor-pointer"
+                style={{ animationDelay: calculateAnimationDelay(index + 6, 50) }}
+                onClick={activity.action}
               >
                 <div className="flex items-start">
                   <div className={`p-2 rounded-lg ${activity.color} mr-3`}>
@@ -133,6 +180,12 @@ const Index = () => {
             ))}
           </div>
         </div>
+        
+        {/* Weekly Review Dialog */}
+        <WeeklyReview 
+          open={showWeeklyReview}
+          onOpenChange={setShowWeeklyReview}
+        />
       </div>
     </Layout>
   );
