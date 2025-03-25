@@ -11,6 +11,9 @@ import {
 import { 
   DomainBreakdown 
 } from "@/components/analytics/DomainBreakdown";
+import {
+  AlphaScoreAnalytics
+} from "@/components/analytics/AlphaScoreAnalytics";
 
 const Analytics = () => {
   const [activeTab, setActiveTab] = useState("progress");
@@ -20,10 +23,11 @@ const Analytics = () => {
       <div className="max-w-7xl mx-auto animate-fade-in">
         <div className="mb-6">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-3 max-w-md">
+            <TabsList className="grid w-full grid-cols-4 max-w-md">
               <TabsTrigger value="progress">Progress</TabsTrigger>
               <TabsTrigger value="habits">Habits</TabsTrigger>
               <TabsTrigger value="domains">Domains</TabsTrigger>
+              <TabsTrigger value="alpha">Alpha Score</TabsTrigger>
             </TabsList>
             <TabsContent value="progress" className="mt-4">
               <ProgressOverview />
@@ -33,6 +37,9 @@ const Analytics = () => {
             </TabsContent>
             <TabsContent value="domains" className="mt-4">
               <DomainBreakdown />
+            </TabsContent>
+            <TabsContent value="alpha" className="mt-4">
+              <AlphaScoreAnalytics />
             </TabsContent>
           </Tabs>
         </div>
