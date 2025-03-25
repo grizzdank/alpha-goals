@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import Index from "./pages/Index";
 import Mission from "./pages/Mission";
+import Sprint from "./pages/Sprint";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -21,7 +22,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/mission" element={<Mission />} />
-            <Route path="/sprints" element={<NotFound />} />
+            <Route path="/sprints" element={<Sprint />} />
             <Route path="/analytics" element={<NotFound />} />
             <Route path="/financial" element={<NotFound />} />
             <Route path="/settings" element={<NotFound />} />

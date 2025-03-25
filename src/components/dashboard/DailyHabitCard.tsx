@@ -20,11 +20,49 @@ interface DailyHabitCardProps {
     description: string;
     streak: number;
     days: HabitDay[];
+    domain?: "mind" | "body" | "purpose" | "relationships";
   };
 }
 
 export function DailyHabitCard({ className = "", style, currentHabit }: DailyHabitCardProps) {
   const [habit, setHabit] = useState(currentHabit);
+  
+  // Get domain from habit or default to "mind"
+  const domain = habit.domain || "mind";
+  
+  // Map domain to appropriate color classes
+  const domainColorMap = {
+    mind: {
+      bg: "bg-mind/10",
+      text: "text-mind",
+      iconBg: "bg-mind/20",
+      pill: "bg-mind/10 text-mind",
+      completed: "bg-mind/80",
+    },
+    body: {
+      bg: "bg-body/10",
+      text: "text-body",
+      iconBg: "bg-body/20",
+      pill: "bg-body/10 text-body",
+      completed: "bg-body/80",
+    },
+    purpose: {
+      bg: "bg-purpose/10",
+      text: "text-purpose",
+      iconBg: "bg-purpose/20",
+      pill: "bg-purpose/10 text-purpose",
+      completed: "bg-purpose/80",
+    },
+    relationships: {
+      bg: "bg-relationships/10",
+      text: "text-relationships",
+      iconBg: "bg-relationships/20",
+      pill: "bg-relationships/10 text-relationships",
+      completed: "bg-relationships/80",
+    }
+  };
+  
+  const colors = domainColorMap[domain];
   
   // Get current date formatted as YYYY-MM-DD
   const today = new Date().toISOString().split('T')[0];
@@ -78,11 +116,11 @@ export function DailyHabitCard({ className = "", style, currentHabit }: DailyHab
   
   return (
     <Card className={`overflow-hidden hover-lift ${className}`} style={style}>
-      <CardHeader className="bg-mind/10 p-4 md:p-6">
+      <CardHeader className={`${colors.bg} p-4 md:p-6`}>
         <div className="flex justify-between items-center">
-          <CardTitle className="text-lg md:text-xl text-mind">Daily Habit</CardTitle>
-          <div className="h-9 w-9 rounded-full bg-mind/20 flex items-center justify-center flex-shrink-0">
-            <CalendarDays className="h-5 w-5 text-mind" />
+          <CardTitle className={`text-lg md:text-xl ${colors.text}`}>Daily Habit</CardTitle>
+          <div className={`h-9 w-9 rounded-full ${colors.iconBg} flex items-center justify-center flex-shrink-0`}>
+            <CalendarDays className={`h-5 w-5 ${colors.text}`} />
           </div>
         </div>
       </CardHeader>
@@ -93,7 +131,7 @@ export function DailyHabitCard({ className = "", style, currentHabit }: DailyHab
             <h3 className="font-semibold text-lg">{habit.title}</h3>
             <p className="text-muted-foreground text-sm mt-1">{habit.description}</p>
           </div>
-          <div className="bg-mind/10 text-mind px-3 py-1 rounded-full text-sm font-medium">
+          <div className={`${colors.pill} px-3 py-1 rounded-full text-sm font-medium`}>
             {habit.streak} day streak
           </div>
         </div>
@@ -106,7 +144,7 @@ export function DailyHabitCard({ className = "", style, currentHabit }: DailyHab
                 id="today-habit" 
                 checked={todayRecord?.completed || false}
                 onCheckedChange={handleToggleHabit}
-                className="mr-2 data-[state=checked]:bg-mind data-[state=checked]:border-mind"
+                className={`mr-2 data-[state=checked]:${colors.text} data-[state=checked]:border-${domain}`}
               />
               <label 
                 htmlFor="today-habit" 
@@ -123,7 +161,7 @@ export function DailyHabitCard({ className = "", style, currentHabit }: DailyHab
                 <span className="text-xs text-muted-foreground mb-1">{day.dayName}</span>
                 <div 
                   className={`h-8 w-8 rounded-full flex items-center justify-center text-xs
-                    ${day.completed ? 'bg-mind/80 text-white' : 'bg-gray-100 dark:bg-gray-800 text-muted-foreground'}`}
+                    ${day.completed ? `${colors.completed} text-white` : 'bg-gray-100 dark:bg-gray-800 text-muted-foreground'}`}
                 >
                   {day.completed ? <CheckCircle className="h-4 w-4" /> : '-'}
                 </div>
