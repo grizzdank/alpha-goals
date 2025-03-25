@@ -3,22 +3,28 @@ import React, { useState } from "react";
 import { useLocation } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
-import { Archive } from "lucide-react";
+import { Archive, BarChart3 } from "lucide-react";
 import { CurrentSprint } from "@/components/mission/CurrentSprint";
 import { SprintEdit } from "@/components/sprint/SprintEdit";
 import { SprintArchive } from "@/components/sprint/SprintArchive";
+import { AlphaScoreRecorder } from "@/components/sprint/AlphaScoreRecorder";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const Sprint = () => {
   const location = useLocation();
   const [isEditing, setIsEditing] = useState(false);
+  const [showAlphaScoreDialog, setShowAlphaScoreDialog] = useState(false);
   
   const isArchivePage = location.pathname.includes('/archive');
   const title = isArchivePage ? "Sprint Archive" : "Sprints";
 
   const toggleEdit = () => {
     setIsEditing(!isEditing);
+  };
+
+  const handleUpdateAlphaScore = () => {
+    setShowAlphaScoreDialog(true);
   };
 
   return (
@@ -33,12 +39,23 @@ const Sprint = () => {
                 <TabsTrigger value="current">Current Sprint</TabsTrigger>
                 <TabsTrigger value="next">Next Sprint</TabsTrigger>
               </TabsList>
-              <Link to="/sprints/archive">
-                <Button variant="outline" size="sm" className="flex items-center gap-1">
-                  <Archive className="h-4 w-4" />
-                  Sprint Archive
+              <div className="flex gap-2">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="flex items-center gap-1"
+                  onClick={handleUpdateAlphaScore}
+                >
+                  <BarChart3 className="h-4 w-4" />
+                  Update Alpha Score
                 </Button>
-              </Link>
+                <Link to="/sprints/archive">
+                  <Button variant="outline" size="sm" className="flex items-center gap-1">
+                    <Archive className="h-4 w-4" />
+                    Sprint Archive
+                  </Button>
+                </Link>
+              </div>
             </div>
 
             <TabsContent value="current" className="mt-0">
@@ -54,7 +71,28 @@ const Sprint = () => {
                 </div>
               ) : (
                 <div>
-                  <CurrentSprint onEdit={toggleEdit} />
+                  <CurrentSprint 
+                    onEdit={toggleEdit}
+                    onUpdateAlphaScore={handleUpdateAlphaScore}
+                  />
+                  
+                  {/* Alpha Score reminder card */}
+                  <div className="glass rounded-xl md:rounded-2xl p-4 md:p-6 mt-4 md:mt-6 border border-muted/50">
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                      <div>
+                        <h3 className="text-lg font-medium mb-1">End of Sprint Approaching</h3>
+                        <p className="text-muted-foreground text-sm">
+                          Don't forget to update your Alpha Score to track your overall life performance.
+                        </p>
+                      </div>
+                      <Button 
+                        onClick={handleUpdateAlphaScore} 
+                        className="md:flex-shrink-0"
+                      >
+                        Update Alpha Score
+                      </Button>
+                    </div>
+                  </div>
                 </div>
               )}
             </TabsContent>
@@ -70,6 +108,11 @@ const Sprint = () => {
             </TabsContent>
           </Tabs>
         )}
+        
+        <AlphaScoreRecorder 
+          open={showAlphaScoreDialog} 
+          onOpenChange={setShowAlphaScoreDialog}
+        />
       </div>
     </Layout>
   );
