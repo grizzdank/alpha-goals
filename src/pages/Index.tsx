@@ -1,23 +1,15 @@
 
 import React, { useEffect, useState } from "react";
-import { Sidebar } from "@/components/layout/Sidebar";
-import { Navbar } from "@/components/layout/Navbar";
+import { Layout } from "@/components/layout/Layout";
 import { DailyHabitCard } from "@/components/dashboard/DailyHabitCard";
 import { AlphaScoreCard } from "@/components/dashboard/AlphaScoreCard";
 import { MissionCard } from "@/components/dashboard/MissionCard";
 import { FinancialCard } from "@/components/dashboard/FinancialCard";
 import { calculateAnimationDelay } from "@/utils/animations";
-import { Calendar, CheckCircle, Menu, Target } from "lucide-react";
-import { useIsMobile } from "@/hooks/use-mobile";
-import { 
-  Sheet,
-  SheetContent,
-  SheetTrigger
-} from "@/components/ui/sheet";
+import { Calendar, CheckCircle, Target } from "lucide-react";
 
 const Index = () => {
   const [loading, setLoading] = useState(true);
-  const isMobile = useIsMobile();
 
   // Simulate data loading
   useEffect(() => {
@@ -80,161 +72,69 @@ const Index = () => {
   }
 
   return (
-    <div className="flex min-h-screen flex-col">
-      {isMobile ? (
-        <>
-          <Navbar subtitle="Welcome back! Ready to align your mission with action?">
-            <Sheet>
-              <SheetTrigger asChild>
-                <button className="mr-2 p-2 rounded-md hover:bg-accent">
-                  <Menu className="h-5 w-5" />
-                </button>
-              </SheetTrigger>
-              <SheetContent side="left" className="p-0 w-[80%] sm:max-w-xs">
-                <Sidebar />
-              </SheetContent>
-            </Sheet>
-          </Navbar>
+    <Layout title="Dashboard" subtitle="Welcome back! Ready to align your mission with action?">
+      <div className="max-w-7xl mx-auto animate-fade-in">
+        {/* Dashboard Grid - Desktop */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+          <DailyHabitCard 
+            className="lg:col-span-3 animate-fade-in"
+            style={{ animationDelay: calculateAnimationDelay(0) }}
+          />
           
-          <main className="flex-1 px-4 py-6">
-            <div className="max-w-7xl mx-auto animate-fade-in">
-              {/* Dashboard Grid - Mobile */}
-              <div className="space-y-6 mb-6">
-                <DailyHabitCard 
-                  className="animate-fade-in"
-                  style={{ animationDelay: calculateAnimationDelay(0) }}
-                />
-                
-                <AlphaScoreCard 
-                  className="animate-fade-in"
-                  style={{ animationDelay: calculateAnimationDelay(1) }}
-                  totalScore={alphaScoreData.totalScore}
-                  categoryScores={alphaScoreData.categoryScores}
-                />
-                
-                <MissionCard 
-                  className="animate-fade-in"
-                  style={{ animationDelay: calculateAnimationDelay(2) }}
-                />
-                
-                <FinancialCard 
-                  className="animate-fade-in"
-                  style={{ animationDelay: calculateAnimationDelay(3) }}
-                />
-              </div>
-              
-              {/* Upcoming Activities */}
-              <div 
-                className="glass rounded-2xl p-4 animate-fade-in" 
-                style={{ animationDelay: calculateAnimationDelay(4) }}
-              >
-                <h2 className="text-lg font-semibold mb-4">Upcoming Activities</h2>
-                
-                <div className="grid grid-cols-1 gap-4">
-                  {upcomingActivities.map((activity, index) => (
-                    <div 
-                      key={activity.id}
-                      className="bg-white/40 rounded-xl p-4 border border-white/30 hover-lift animate-fade-in"
-                      style={{ animationDelay: calculateAnimationDelay(index + 5, 50) }}
-                    >
-                      <div className="flex items-start">
-                        <div className={`p-2 rounded-lg ${activity.color} mr-3`}>
-                          <activity.icon className="h-5 w-5" />
-                        </div>
-                        <div>
-                          <h3 className="font-medium">{activity.title}</h3>
-                          <p className="text-sm text-muted-foreground mt-1">
-                            {activity.description}
-                          </p>
-                          <p className="text-xs font-medium text-primary mt-2">
-                            {activity.date}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </main>
-        </>
-      ) : (
-        <div className="flex flex-row">
-          <Sidebar />
+          <AlphaScoreCard 
+            className="lg:col-span-2 animate-fade-in"
+            style={{ animationDelay: calculateAnimationDelay(1) }}
+            totalScore={alphaScoreData.totalScore}
+            categoryScores={alphaScoreData.categoryScores}
+          />
           
-          <div className="flex-1 flex flex-col">
-            <Navbar subtitle="Welcome back! Ready to align your mission with action?" />
+          <div className="flex flex-col space-y-6">
+            <MissionCard 
+              className="flex-1 animate-fade-in"
+              style={{ animationDelay: calculateAnimationDelay(2) }}
+            />
             
-            <main className="flex-1 px-6 py-8">
-              <div 
-                className="max-w-7xl mx-auto animate-fade-in"
-                style={{ animationDelay: "200ms" }}
-              >
-                {/* Dashboard Grid - Desktop */}
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-                  <DailyHabitCard 
-                    className="lg:col-span-3 animate-fade-in"
-                    style={{ animationDelay: calculateAnimationDelay(0) }}
-                  />
-                  
-                  <AlphaScoreCard 
-                    className="lg:col-span-2 animate-fade-in"
-                    style={{ animationDelay: calculateAnimationDelay(1) }}
-                    totalScore={alphaScoreData.totalScore}
-                    categoryScores={alphaScoreData.categoryScores}
-                  />
-                  
-                  <div className="flex flex-col space-y-6">
-                    <MissionCard 
-                      className="flex-1 animate-fade-in"
-                      style={{ animationDelay: calculateAnimationDelay(2) }}
-                    />
-                    
-                    <FinancialCard 
-                      className="flex-1 animate-fade-in"
-                      style={{ animationDelay: calculateAnimationDelay(3) }}
-                    />
-                  </div>
-                </div>
-                
-                {/* Upcoming Activities */}
-                <div 
-                  className="glass rounded-2xl p-6 animate-fade-in" 
-                  style={{ animationDelay: calculateAnimationDelay(4) }}
-                >
-                  <h2 className="text-lg font-semibold mb-4">Upcoming Activities</h2>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    {upcomingActivities.map((activity, index) => (
-                      <div 
-                        key={activity.id}
-                        className="bg-white/40 rounded-xl p-4 border border-white/30 hover-lift animate-fade-in"
-                        style={{ animationDelay: calculateAnimationDelay(index + 5, 50) }}
-                      >
-                        <div className="flex items-start">
-                          <div className={`p-2 rounded-lg ${activity.color} mr-3`}>
-                            <activity.icon className="h-5 w-5" />
-                          </div>
-                          <div>
-                            <h3 className="font-medium">{activity.title}</h3>
-                            <p className="text-sm text-muted-foreground mt-1">
-                              {activity.description}
-                            </p>
-                            <p className="text-xs font-medium text-primary mt-2">
-                              {activity.date}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </main>
+            <FinancialCard 
+              className="flex-1 animate-fade-in"
+              style={{ animationDelay: calculateAnimationDelay(3) }}
+            />
           </div>
         </div>
-      )}
-    </div>
+        
+        {/* Upcoming Activities */}
+        <div 
+          className="glass rounded-2xl p-6 animate-fade-in" 
+          style={{ animationDelay: calculateAnimationDelay(4) }}
+        >
+          <h2 className="text-lg font-semibold mb-4">Upcoming Activities</h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {upcomingActivities.map((activity, index) => (
+              <div 
+                key={activity.id}
+                className="bg-white/40 rounded-xl p-4 border border-white/30 hover-lift animate-fade-in"
+                style={{ animationDelay: calculateAnimationDelay(index + 5, 50) }}
+              >
+                <div className="flex items-start">
+                  <div className={`p-2 rounded-lg ${activity.color} mr-3`}>
+                    <activity.icon className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <h3 className="font-medium">{activity.title}</h3>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      {activity.description}
+                    </p>
+                    <p className="text-xs font-medium text-primary mt-2">
+                      {activity.date}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </Layout>
   );
 };
 
