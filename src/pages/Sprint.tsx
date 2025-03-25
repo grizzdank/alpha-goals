@@ -2,9 +2,7 @@
 import React, { useState } from "react";
 import { useLocation } from "react-router-dom";
 import { Link } from "react-router-dom";
-import { Sidebar } from "@/components/layout/Sidebar";
 import { Layout } from "@/components/layout/Layout";
-import { useIsMobile } from "@/hooks/use-mobile";
 import { Archive } from "lucide-react";
 import { CurrentSprint } from "@/components/mission/CurrentSprint";
 import { SprintEdit } from "@/components/sprint/SprintEdit";
@@ -13,7 +11,6 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const Sprint = () => {
-  const isMobile = useIsMobile();
   const location = useLocation();
   const [isEditing, setIsEditing] = useState(false);
   

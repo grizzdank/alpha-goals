@@ -1,8 +1,6 @@
 
 import React, { useState } from "react";
-import { Sidebar } from "@/components/layout/Sidebar";
 import { Layout } from "@/components/layout/Layout";
-import { useIsMobile } from "@/hooks/use-mobile";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   ProgressOverview 
@@ -15,7 +13,6 @@ import {
 } from "@/components/analytics/DomainBreakdown";
 
 const Analytics = () => {
-  const isMobile = useIsMobile();
   const [activeTab, setActiveTab] = useState("progress");
 
   return (

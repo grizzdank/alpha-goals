@@ -40,7 +40,10 @@ export const Layout: React.FC<LayoutProps> = ({
           </Sheet>
         )}
       </Navbar>
-      <main className="flex-1 p-4 md:p-6">{children}</main>
+      <div className="flex flex-1">
+        {!isMobile && <Sidebar />}
+        <main className="flex-1 p-4 md:p-6">{children}</main>
+      </div>
     </div>
   );
 };
