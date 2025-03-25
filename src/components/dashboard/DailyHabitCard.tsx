@@ -10,8 +10,8 @@ import {
   Habit, 
   HabitDay, 
   generateSampleDays, 
-  getDomainColors, 
-  toggleHabitCompletion 
+  getDomainColors,
+  toggleHabitForDate
 } from "@/utils/habitUtils";
 
 interface DailyHabitCardProps {
@@ -24,9 +24,6 @@ export function DailyHabitCard({ className = "", style }: DailyHabitCardProps) {
   const [habits, setHabits] = useState<Habit[]>([]);
   const [activeHabit, setActiveHabit] = useState<Habit | null>(null);
   const [habitDays, setHabitDays] = useState<HabitDay[]>([]);
-  
-  // Get today's date
-  const today = new Date().toISOString().split('T')[0];
   
   // Load habits from localStorage
   useEffect(() => {
@@ -53,13 +50,13 @@ export function DailyHabitCard({ className = "", style }: DailyHabitCardProps) {
         }
       }
     }
-  }, [today]);
+  }, []);
   
-  // Handle toggle habit completion
-  const handleToggleHabit = () => {
+  // Handle toggle day completion
+  const handleToggleDay = (date: string) => {
     if (!activeHabit) return;
     
-    toggleHabitCompletion(activeHabit, habitDays, (updatedHabit, updatedDays) => {
+    toggleHabitForDate(activeHabit, habitDays, date, (updatedHabit, updatedDays) => {
       // Update state
       setHabitDays(updatedDays);
       setActiveHabit(updatedHabit);
@@ -81,9 +78,6 @@ export function DailyHabitCard({ className = "", style }: DailyHabitCardProps) {
   
   // Get domain colors
   const colors = getDomainColors(domain);
-  
-  // Find today's record
-  const todayRecord = habitDays.find(day => day.date === today);
   
   // If no active habit is found
   if (!activeHabit) {
@@ -132,8 +126,7 @@ export function DailyHabitCard({ className = "", style }: DailyHabitCardProps) {
         <HabitProgress 
           activeHabit={activeHabit}
           habitDays={habitDays}
-          handleToggleHabit={handleToggleHabit}
-          todayCompleted={todayRecord?.completed || false}
+          handleToggleDay={handleToggleDay}
           colorClass={colors.completed}
         />
         

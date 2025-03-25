@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { HabitCard } from "./HabitCard";
@@ -178,45 +177,50 @@ export function HabitsList() {
     toast.success("Habit updated successfully");
   };
   
-  // Filter habits based on the selected filter
   const filteredHabits = habits.filter(habit => {
     if (filter === "active") return habit.active;
     if (filter === "inactive") return !habit.active;
     return true;
   });
   
-  // Mark habit completion for today
-  const markHabitCompletion = (habitId, completed) => {
-    const today = new Date().toISOString().split('T')[0];
-    
+  const markHabitForDate = (habitId, date) => {
     setHabits(habits.map(habit => {
       if (habit.id === habitId) {
-        // Get or create the days array
         const days = habit.days || [];
         
-        // Find if today already exists
-        const todayIndex = days.findIndex(day => day.date === today);
+        const dayIndex = days.findIndex(day => day.date === date);
         
         let newDays;
         let newStreak = habit.streak;
+        let isCompleting = true;
         
-        if (todayIndex >= 0) {
-          // Update existing day
+        if (dayIndex >= 0) {
+          isCompleting = !days[dayIndex].completed;
+          
           newDays = days.map((day, i) => 
-            i === todayIndex ? { ...day, completed } : day
+            i === dayIndex ? { ...day, completed: isCompleting } : day
           );
         } else {
-          // Add new day
-          newDays = [...days, { date: today, completed }];
+          newDays = [...days, { date, completed: true }];
+          isCompleting = true;
         }
         
-        // Update streak based on completion
-        if (completed) {
-          newStreak = habit.streak + 1;
-          toast.success(`"${habit.title}" marked as completed`);
+        const today = new Date().toISOString().split('T')[0];
+        
+        if (date === today) {
+          if (isCompleting) {
+            newStreak = habit.streak + 1;
+            toast.success(`"${habit.title}" marked as completed`);
+          } else {
+            newStreak = Math.max(0, habit.streak - 1);
+            toast.info(`"${habit.title}" marked as not completed`);
+          }
         } else {
-          newStreak = Math.max(0, habit.streak - 1);
-          toast.info(`"${habit.title}" marked as not completed`);
+          if (isCompleting) {
+            toast.success(`"${habit.title}" marked as completed for ${new Date(date).toLocaleDateString()}`);
+          } else {
+            toast.info(`"${habit.title}" marked as not completed for ${new Date(date).toLocaleDateString()}`);
+          }
         }
         
         return { 
@@ -252,7 +256,7 @@ export function HabitsList() {
               onEdit={handleEditClick}
               onDelete={handleDeleteClick}
               onTogglePin={togglePinned}
-              onMarkCompleted={markHabitCompletion}
+              onMarkCompleted={markHabitForDate}
               getDomainIcon={getDomainIcon}
               getDomainColorClass={getDomainColorClass}
             />

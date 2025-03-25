@@ -78,7 +78,7 @@ export const getDomainColors = (habitDomain: string) => {
   return domainColorMap[habitDomain as keyof typeof domainColorMap] || domainColorMap.mind;
 };
 
-// Handle toggle habit completion
+// Handle toggle habit completion for today
 export const toggleHabitCompletion = (
   habit: Habit,
   habitDays: HabitDay[],
@@ -87,32 +87,56 @@ export const toggleHabitCompletion = (
   if (!habit) return;
   
   const today = new Date().toISOString().split('T')[0];
+  toggleHabitForDate(habit, habitDays, today, onUpdate);
+};
+
+// Toggle habit completion for a specific date
+export const toggleHabitForDate = (
+  habit: Habit,
+  habitDays: HabitDay[],
+  date: string,
+  onUpdate: (updatedHabit: Habit, updatedDays: HabitDay[]) => void
+) => {
+  if (!habit) return;
   
-  // Find today's record or create it
-  const dayIndex = habitDays.findIndex(day => day.date === today);
+  // Find day's record or create it
+  const dayIndex = habitDays.findIndex(day => day.date === date);
   const updatedDays = [...habitDays];
+  let isCompleting = true;
   
   if (dayIndex >= 0) {
     // Toggle existing day
+    isCompleting = !updatedDays[dayIndex].completed;
     updatedDays[dayIndex] = { 
       ...updatedDays[dayIndex], 
-      completed: !updatedDays[dayIndex].completed 
+      completed: isCompleting
     };
   } else {
-    // Add today if it doesn't exist
-    updatedDays.push({ date: today, completed: true });
+    // Add the date if it doesn't exist
+    updatedDays.push({ date, completed: true });
   }
   
   // Update habit streak
   let newStreak = habit.streak;
-  const isCompleted = dayIndex >= 0 ? !habitDays[dayIndex].completed : true;
+  const today = new Date().toISOString().split('T')[0];
   
-  if (isCompleted) {
-    newStreak += 1;
-    toast.success(`${habit.title} completed`);
+  // Only update streak if the date being toggled is today
+  if (date === today) {
+    if (isCompleting) {
+      newStreak += 1;
+      toast.success(`${habit.title} completed`);
+    } else {
+      newStreak = Math.max(0, newStreak - 1);
+      toast.info(`${habit.title} unmarked`);
+    }
   } else {
-    newStreak = Math.max(0, newStreak - 1);
-    toast.info(`${habit.title} unmarked`);
+    // Just show a toast for historical dates
+    const formattedDate = new Date(date).toLocaleDateString();
+    if (isCompleting) {
+      toast.success(`${habit.title} marked as completed for ${formattedDate}`);
+    } else {
+      toast.info(`${habit.title} unmarked for ${formattedDate}`);
+    }
   }
   
   // Create updated habit object
