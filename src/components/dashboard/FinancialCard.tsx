@@ -36,19 +36,19 @@ export function FinancialCard({
       
       <div className="grid grid-cols-2 gap-4 mb-6">
         <div className="bg-white/40 rounded-xl p-4 border border-white/30">
-          <h4 className="text-sm font-medium text-muted-foreground mb-1">Monthly</h4>
+          <h4 className="text-sm font-medium text-muted-foreground mb-1">Monthly Freedom Number</h4>
           <p className="text-2xl font-semibold">${monthlyFreedomNumber.toLocaleString()}</p>
         </div>
         
         <div className="bg-white/40 rounded-xl p-4 border border-white/30">
-          <h4 className="text-sm font-medium text-muted-foreground mb-1">Annual</h4>
+          <h4 className="text-sm font-medium text-muted-foreground mb-1">Annual Freedom Number</h4>
           <p className="text-2xl font-semibold">${annualFreedomNumber.toLocaleString()}</p>
         </div>
       </div>
       
       <div className="mb-6">
         <div className="flex justify-between mb-2">
-          <h4 className="text-sm font-medium">Progress to Goal</h4>
+          <h4 className="text-sm font-medium">Progress to Freedom Goal</h4>
           <span className="text-sm font-medium">{percentToGoal}%</span>
         </div>
         <div className="w-full bg-muted rounded-full h-2.5">
