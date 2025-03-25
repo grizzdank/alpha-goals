@@ -1,5 +1,4 @@
-
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -11,7 +10,9 @@ import {
   Trash2, 
   Edit, 
   AlertCircle, 
-  AlertTriangle 
+  AlertTriangle,
+  Pin,
+  PinOff
 } from "lucide-react";
 import {
   Dialog,
@@ -24,6 +25,7 @@ import {
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
+import { HabitForm } from "@/components/sprint/HabitForm";
 
 // Sample habit data - in a real app, this would come from a database or state management
 const sampleHabits = [
@@ -34,7 +36,8 @@ const sampleHabits = [
     domain: "mind",
     active: true,
     streak: 5,
-    createdAt: "2023-06-01"
+    createdAt: "2023-06-01",
+    isPinned: true
   },
   {
     id: 2,
@@ -43,7 +46,8 @@ const sampleHabits = [
     domain: "body",
     active: true,
     streak: 3,
-    createdAt: "2023-06-05"
+    createdAt: "2023-06-05",
+    isPinned: false
   },
   {
     id: 3,
@@ -52,7 +56,8 @@ const sampleHabits = [
     domain: "mind",
     active: true,
     streak: 7,
-    createdAt: "2023-06-10"
+    createdAt: "2023-06-10",
+    isPinned: false
   },
   {
     id: 4,
@@ -61,7 +66,8 @@ const sampleHabits = [
     domain: "relationships",
     active: false,
     streak: 0,
-    createdAt: "2023-06-15"
+    createdAt: "2023-06-15",
+    isPinned: false
   },
   {
     id: 5,
@@ -70,15 +76,36 @@ const sampleHabits = [
     domain: "purpose",
     active: true,
     streak: 4,
-    createdAt: "2023-06-20"
+    createdAt: "2023-06-20",
+    isPinned: false
   }
 ];
 
 export function HabitsList() {
-  const [habits, setHabits] = useState(sampleHabits);
+  const [habits, setHabits] = useState([]);
   const [habitToDelete, setHabitToDelete] = useState(null);
+  const [habitToEdit, setHabitToEdit] = useState(null);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [showEditDialog, setShowEditDialog] = useState(false);
   const [filter, setFilter] = useState("all"); // all, active, inactive
+  
+  // Load habits from localStorage or use sample data
+  useEffect(() => {
+    const storedHabits = localStorage.getItem('habits');
+    if (storedHabits) {
+      setHabits(JSON.parse(storedHabits));
+    } else {
+      setHabits(sampleHabits);
+      localStorage.setItem('habits', JSON.stringify(sampleHabits));
+    }
+  }, []);
+
+  // Save habits to localStorage whenever they change
+  useEffect(() => {
+    if (habits.length > 0) {
+      localStorage.setItem('habits', JSON.stringify(habits));
+    }
+  }, [habits]);
   
   const activeHabitsCount = habits.filter(h => h.active).length;
   const inactiveHabitsCount = habits.filter(h => !h.active).length;
@@ -139,6 +166,29 @@ export function HabitsList() {
     setHabitToDelete(habit);
     setShowDeleteDialog(true);
   };
+
+  // Handle edit button click
+  const handleEditClick = (habit) => {
+    setHabitToEdit(habit);
+    setShowEditDialog(true);
+  };
+  
+  // Handle pin/unpin habit
+  const togglePinned = (habit) => {
+    const updatedHabits = habits.map(h => ({
+      ...h,
+      isPinned: h.id === habit.id ? !h.isPinned : false
+    }));
+    
+    setHabits(updatedHabits);
+    
+    // Show appropriate toast
+    if (!habit.isPinned) {
+      toast.success(`"${habit.title}" pinned to dashboard`);
+    } else {
+      toast.info(`"${habit.title}" unpinned from dashboard`);
+    }
+  };
   
   // Confirm habit deletion
   const confirmDelete = () => {
@@ -148,6 +198,16 @@ export function HabitsList() {
       setShowDeleteDialog(false);
       setHabitToDelete(null);
     }
+  };
+  
+  // Handle save edited habit
+  const handleSaveEdit = (updatedHabit) => {
+    setHabits(habits.map(habit => 
+      habit.id === updatedHabit.id ? updatedHabit : habit
+    ));
+    setShowEditDialog(false);
+    setHabitToEdit(null);
+    toast.success("Habit updated successfully");
   };
   
   // Filter habits based on selected filter
@@ -251,10 +311,27 @@ export function HabitsList() {
                 </div>
               </CardContent>
               <CardFooter className="flex justify-between">
-                <Button variant="ghost" size="sm" className="gap-1">
-                  <Edit className="h-4 w-4" />
-                  Edit
-                </Button>
+                <div className="flex gap-2">
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="gap-1"
+                    onClick={() => handleEditClick(habit)}
+                  >
+                    <Edit className="h-4 w-4" />
+                    Edit
+                  </Button>
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    className="gap-1"
+                    onClick={() => togglePinned(habit)}
+                    title={habit.isPinned ? "Unpin from dashboard" : "Pin to dashboard"}
+                  >
+                    {habit.isPinned ? <PinOff className="h-4 w-4" /> : <Pin className="h-4 w-4" />}
+                    {habit.isPinned ? "Unpin" : "Pin"}
+                  </Button>
+                </div>
                 <Button 
                   variant="ghost" 
                   size="sm"
@@ -287,6 +364,23 @@ export function HabitsList() {
               Delete
             </Button>
           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Habit Dialog */}
+      <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Edit Habit</DialogTitle>
+          </DialogHeader>
+          {habitToEdit && (
+            <HabitForm 
+              initialValues={habitToEdit} 
+              onSubmit={handleSaveEdit} 
+              submitButtonText="Save Changes"
+              onCancel={() => setShowEditDialog(false)}
+            />
+          )}
         </DialogContent>
       </Dialog>
     </div>
