@@ -1,5 +1,5 @@
-
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ProgressCircle } from "@/components/ui/ProgressCircle";
 import { 
@@ -15,17 +15,17 @@ import {
   Bar
 } from "recharts";
 import { ChartContainer } from "@/components/ui/chart";
-import { TrendingUp, TrendingDown, Heart, Brain, Target, Users } from "lucide-react";
+import { TrendingUp, TrendingDown, Heart, Brain, Target, Users, BarChart3 } from "lucide-react";
 import { StatCard } from "./StatCard";
+import { Button } from "@/components/ui/button";
 
-// Sample data - in a real app, this would come from your API or state management
 const alphaScoreHistory = [
-  { month: 'Jan', score: 65 },
-  { month: 'Feb', score: 68 },
-  { month: 'Mar', score: 72 },
-  { month: 'Apr', score: 70 },
-  { month: 'May', score: 74 },
-  { month: 'Jun', score: 76 },
+  { quarter: 'Q1 2023', score: 65 },
+  { quarter: 'Q2 2023', score: 68 },
+  { quarter: 'Q3 2023', score: 72 },
+  { quarter: 'Q4 2023', score: 70 },
+  { quarter: 'Q1 2024', score: 74 },
+  { quarter: 'Q2 2024', score: 76 },
 ];
 
 const categoryScores = [
@@ -96,9 +96,24 @@ const chartConfig = {
 };
 
 export const AlphaScoreAnalytics = () => {
+  const navigate = useNavigate();
+
+  const handleUpdateAlphaScore = () => {
+    navigate('/sprints', { state: { showAlphaScoreDialog: true } });
+  };
+  
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-bold">Alpha Score Analytics</h2>
+      <div className="flex items-center justify-between">
+        <h2 className="text-2xl font-bold">Alpha Score Analytics</h2>
+        <Button 
+          onClick={handleUpdateAlphaScore}
+          className="flex items-center gap-2"
+        >
+          <BarChart3 className="h-4 w-4" />
+          Update Alpha Score
+        </Button>
+      </div>
       
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <StatCard 
@@ -153,11 +168,11 @@ export const AlphaScoreAnalytics = () => {
         </CardContent>
       </Card>
 
-      {/* Alpha Score History */}
+      {/* Alpha Score History - Updated to show quarters */}
       <Card>
         <CardHeader>
           <CardTitle>Alpha Score History</CardTitle>
-          <CardDescription>Your score progression over time</CardDescription>
+          <CardDescription>Your score progression by quarter</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="h-[300px] w-full">
@@ -173,7 +188,7 @@ export const AlphaScoreAnalytics = () => {
                   }}
                 >
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="month" />
+                  <XAxis dataKey="quarter" />
                   <YAxis domain={[0, 100]} />
                   <Tooltip />
                   <Legend />

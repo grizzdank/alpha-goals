@@ -1,5 +1,4 @@
-
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
@@ -18,6 +17,13 @@ const Sprint = () => {
   
   const isArchivePage = location.pathname.includes('/archive');
   const title = isArchivePage ? "Sprint Archive" : "Sprints";
+
+  useEffect(() => {
+    if (location.state && location.state.showAlphaScoreDialog) {
+      setShowAlphaScoreDialog(true);
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state]);
 
   const toggleEdit = () => {
     setIsEditing(!isEditing);
@@ -76,7 +82,6 @@ const Sprint = () => {
                     onUpdateAlphaScore={handleUpdateAlphaScore}
                   />
                   
-                  {/* Alpha Score reminder card */}
                   <div className="glass rounded-xl md:rounded-2xl p-4 md:p-6 mt-4 md:mt-6 border border-muted/50">
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                       <div>
