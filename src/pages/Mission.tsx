@@ -5,7 +5,7 @@ import { Layout } from "@/components/layout/Layout";
 
 const Mission = () => {
   return (
-    <Layout>
+    <Layout title="Mission">
       <MissionContainer />
     </Layout>
   );

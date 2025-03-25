@@ -1,6 +1,5 @@
 
 import React, { useState } from "react";
-import { Sidebar } from "@/components/layout/Sidebar";
 import { Layout } from "@/components/layout/Layout";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -24,10 +23,9 @@ const Financial = () => {
   const annualFreedomNumber = monthlyFreedomNumber * 12;
 
   return (
-    <Layout>
+    <Layout title="Financial Freedom">
       <div className="max-w-7xl mx-auto animate-fade-in">
         <div className="mb-6">
-          <h1 className="text-3xl font-bold tracking-tight mb-4">Financial Freedom</h1>
           <p className="text-muted-foreground mb-8">
             Calculate your financial freedom numbers and track your progress towards financial independence.
           </p>

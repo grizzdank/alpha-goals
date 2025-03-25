@@ -41,7 +41,7 @@ export const Layout: React.FC<LayoutProps> = ({
         )}
       </Navbar>
       <div className="flex flex-1">
-        {!isMobile && <Sidebar />}
+        {!isMobile && <Sidebar className="h-[calc(100vh-4rem)] sticky top-16" />}
         <main className="flex-1 p-4 md:p-6">{children}</main>
       </div>
     </div>

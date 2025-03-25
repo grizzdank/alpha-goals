@@ -15,13 +15,14 @@ const Sprint = () => {
   const [isEditing, setIsEditing] = useState(false);
   
   const isArchivePage = location.pathname.includes('/archive');
+  const title = isArchivePage ? "Sprint Archive" : "Sprints";
 
   const toggleEdit = () => {
     setIsEditing(!isEditing);
   };
 
   return (
-    <Layout>
+    <Layout title={title}>
       <div className="max-w-7xl mx-auto animate-fade-in">
         {isArchivePage ? (
           <SprintArchive />

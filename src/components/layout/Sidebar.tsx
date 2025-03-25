@@ -59,16 +59,21 @@ const navItems = [
   },
 ];
 
-export function Sidebar() {
+interface SidebarProps {
+  className?: string;
+}
+
+export function Sidebar({ className }: SidebarProps) {
   const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
   
   return (
     <aside 
       className={cn(
-        "h-screen sticky top-0 flex flex-col transition-all duration-300 ease-in-out",
+        "flex flex-col transition-all duration-300 ease-in-out",
         "border-r border-border bg-sidebar dark:bg-sidebar shadow-sm z-30",
-        collapsed ? "w-[80px]" : "w-[280px]"
+        collapsed ? "w-[80px]" : "w-[280px]",
+        className
       )}
     >
       {/* Logo */}

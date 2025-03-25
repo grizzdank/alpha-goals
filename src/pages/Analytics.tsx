@@ -16,7 +16,7 @@ const Analytics = () => {
   const [activeTab, setActiveTab] = useState("progress");
 
   return (
-    <Layout>
+    <Layout title="Analytics">
       <div className="max-w-7xl mx-auto animate-fade-in">
         <div className="mb-6">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
