@@ -6,7 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { FolderClock } from "lucide-react";
 import { AnnualChallenge } from "@/components/mysogi/AnnualChallenge";
-import { MonthlyChallenges } from "@/components/mysogi/MonthlyChallenges";
+import { MonthlyChallenges, Challenge } from "@/components/mysogi/MonthlyChallenges";
 import { getCategoryIcon, getCategoryColor, getStatusBadge } from "@/components/mysogi/categoryUtils";
 
 const Mysogi = () => {
@@ -42,7 +42,7 @@ const Mysogi = () => {
     ]
   });
   
-  const [monthlyChallenges, setMonthlyChallenges] = useState([
+  const [monthlyChallenges, setMonthlyChallenges] = useState<Challenge[]>([
     {
       id: 1,
       title: "Daily Meditation",

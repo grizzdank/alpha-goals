@@ -10,26 +10,17 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { Challenge } from "./MonthlyChallenges";
 
 interface ChallengeCardProps {
-  challenge: {
-    id: number;
-    title: string;
-    description: string;
-    category: string;
-    startDate: string;
-    endDate: string;
-    progress: number;
-    status: string;
-    successCriteria?: string;
-  };
+  challenge: Challenge;
   index: number;
   getCategoryIcon: (categoryId: string) => React.ElementType;
   getCategoryColor: (categoryId: string) => string;
   getStatusBadge: (status: string) => React.ReactNode;
   animationDelay: string;
-  onEdit: (challenge: any) => void;
-  onUpdateProgress?: (challenge: any) => void;
+  onEdit: (challenge: Challenge) => void;
+  onUpdateProgress?: (challenge: Challenge) => void;
 }
 
 export const ChallengeCard: React.FC<ChallengeCardProps> = ({

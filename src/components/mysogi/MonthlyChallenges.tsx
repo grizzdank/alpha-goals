@@ -8,7 +8,7 @@ import { calculateAnimationDelay } from "@/utils/animations";
 import { MonthlyChallengeForm } from "./MonthlyChallengeForm";
 import { toast } from "sonner";
 
-interface Challenge {
+export interface Challenge {
   id: number;
   title: string;
   description: string;
@@ -22,7 +22,7 @@ interface Challenge {
 
 interface MonthlyChallengesProps {
   challenges: Challenge[];
-  setChallenges: (challenges: Challenge[]) => void;
+  setChallenges: React.Dispatch<React.SetStateAction<Challenge[]>>;
   getCategoryIcon: (categoryId: string) => React.ElementType;
   getCategoryColor: (categoryId: string) => string;
   getStatusBadge: (status: string) => React.ReactNode;
