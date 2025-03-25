@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { Edit, Trash2, Pin, PinOff } from "lucide-react";
-import { StreakVisualization } from "./StreakVisualization";
 import { HabitCalendarWeek } from "@/components/dashboard/HabitCalendarWeek";
 import { toast } from "sonner";
 
@@ -47,7 +46,7 @@ export function HabitCard({
 }: HabitCardProps) {
   // Handle mark completed by date
   const handleToggleDay = (date: string) => {
-    if (onMarkCompleted && habit.active) {
+    if (onMarkCompleted) {
       onMarkCompleted(habit.id, date);
     }
   };
@@ -83,21 +82,12 @@ export function HabitCard({
             {habit.streak} day streak
           </div>
           
-          {habit.active && (
-            <HabitCalendarWeek 
-              habitDays={habit.days || []} 
-              colorClass={colorClass}
-              onToggleDay={handleToggleDay}
-              readOnly={!habit.active}
-            />
-          )}
-          
-          {!habit.active && (
-            <StreakVisualization 
-              streak={habit.streak} 
-              habitDays={habit.days}
-            />
-          )}
+          <HabitCalendarWeek 
+            habitDays={habit.days || []} 
+            colorClass={colorClass}
+            onToggleDay={handleToggleDay}
+            readOnly={!habit.active}
+          />
         </div>
       </CardContent>
       <CardFooter className="flex justify-between">

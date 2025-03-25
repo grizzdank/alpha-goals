@@ -57,6 +57,7 @@ export function HabitCalendarWeek({
                     ${day.isToday ? 'ring-2 ring-offset-2 ring-offset-background ring-primary/40' : ''}
                   `}
                   disabled={readOnly}
+                  aria-label={`${day.dayName}, ${day.completed ? 'completed' : 'not completed'}${!readOnly ? ', click to toggle' : ''}`}
                 >
                   {day.completed ? 
                     <CheckCircle className="h-4 w-4" /> : 
