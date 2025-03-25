@@ -1,34 +1,18 @@
 
 import React from "react";
 import { useForm } from "react-hook-form";
-import { 
-  Form, 
-  FormControl, 
-  FormField, 
-  FormItem, 
-  FormLabel, 
-  FormMessage, 
-  FormDescription 
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
+import { Form } from "@/components/ui/form";
 import { 
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
-  DialogClose
 } from "@/components/ui/dialog";
-import { Calendar, CalendarDays } from "lucide-react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { CalendarDays } from "lucide-react";
+import { ChallengeFormBasicFields } from "./challenge-form/ChallengeFormBasicFields";
+import { ChallengeFormSuccessCriteria } from "./challenge-form/ChallengeFormSuccessCriteria";
+import { ChallengeFormDateFields } from "./challenge-form/ChallengeFormDateFields";
+import { ChallengeFormActions } from "./challenge-form/ChallengeFormActions";
 
 interface MonthlyChallengeFormValues {
   id?: number;
@@ -95,114 +79,10 @@ export function MonthlyChallengeForm({
         
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="title"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Challenge Title</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Daily Meditation" {...field} />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-            
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Description</FormLabel>
-                  <FormControl>
-                    <Textarea 
-                      placeholder="Practice meditation for at least 10 minutes every day" 
-                      {...field} 
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-            
-            <FormField
-              control={form.control}
-              name="category"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Category</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select a category" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {categories.map(category => (
-                        <SelectItem key={category.id} value={category.id}>
-                          {category.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </FormItem>
-              )}
-            />
-            
-            <FormField
-              control={form.control}
-              name="successCriteria"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>I will know I met my goal because...</FormLabel>
-                  <FormControl>
-                    <Textarea 
-                      placeholder="I will have meditated for at least 10 minutes every day for 30 days"
-                      {...field} 
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    Define clear success criteria for your challenge
-                  </FormDescription>
-                </FormItem>
-              )}
-            />
-            
-            <div className="grid grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="startDate"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Start Date</FormLabel>
-                    <FormControl>
-                      <Input type="date" {...field} />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-              
-              <FormField
-                control={form.control}
-                name="endDate"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>End Date</FormLabel>
-                    <FormControl>
-                      <Input type="date" {...field} />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-            </div>
-            
-            <DialogFooter className="mt-6">
-              <DialogClose asChild>
-                <Button type="button" variant="outline">Cancel</Button>
-              </DialogClose>
-              <Button type="submit">
-                {challenge?.id ? "Update" : "Create"} Challenge
-              </Button>
-            </DialogFooter>
+            <ChallengeFormBasicFields control={form.control} categories={categories} />
+            <ChallengeFormSuccessCriteria control={form.control} />
+            <ChallengeFormDateFields control={form.control} />
+            <ChallengeFormActions isEditing={!!challenge?.id} />
           </form>
         </Form>
       </DialogContent>
