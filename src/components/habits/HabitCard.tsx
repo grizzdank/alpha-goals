@@ -5,6 +5,12 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { Edit, Trash2, Pin, PinOff } from "lucide-react";
+import { StreakVisualization } from "./StreakVisualization";
+
+interface HabitDay {
+  date: string;
+  completed: boolean;
+}
 
 interface HabitCardProps {
   habit: {
@@ -16,6 +22,7 @@ interface HabitCardProps {
     streak: number;
     createdAt: string;
     isPinned: boolean;
+    days?: HabitDay[];
   };
   onToggleActive: (id: number) => void;
   onEdit: (habit: any) => void;
@@ -56,10 +63,10 @@ export function HabitCard({
         </div>
       </CardHeader>
       <CardContent className="pb-2">
-        <div className="text-sm">
-          <span className="font-medium">{habit.streak}</span>
-          <span className="text-muted-foreground ml-1">day streak</span>
-        </div>
+        <StreakVisualization 
+          streak={habit.streak} 
+          habitDays={habit.days}
+        />
       </CardContent>
       <CardFooter className="flex justify-between">
         <div className="flex gap-2">

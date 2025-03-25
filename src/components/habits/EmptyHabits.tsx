@@ -1,8 +1,9 @@
 
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
 interface EmptyHabitsProps {
   filter: string;
@@ -19,7 +20,12 @@ export function EmptyHabits({ filter }: EmptyHabitsProps) {
             ? "You haven't created any habits yet." 
             : `You don't have any ${filter} habits.`}
         </p>
-        <Button>Create Your First Habit</Button>
+        <Button asChild>
+          <Link to="/habits?tab=new">
+            <Plus className="h-4 w-4 mr-1" />
+            Create Your First Habit
+          </Link>
+        </Button>
       </CardContent>
     </Card>
   );
