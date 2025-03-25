@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { Navbar } from "@/components/layout/Navbar";
@@ -35,22 +36,6 @@ const Index = () => {
       { category: "body" as const, score: 68, label: "Body" },
       { category: "mind" as const, score: 79, label: "Mind" },
     ],
-  };
-
-  // Sample daily habit data
-  const dailyHabitData = {
-    id: 1,
-    title: "20-minute meditation",
-    description: "Mindfulness practice every morning to start the day centered",
-    streak: 5,
-    days: [
-      { date: "2023-07-01", completed: true },
-      { date: "2023-07-02", completed: true },
-      { date: "2023-07-03", completed: true },
-      { date: "2023-07-04", completed: true },
-      { date: "2023-07-05", completed: true },
-      { date: new Date().toISOString().split('T')[0], completed: false }
-    ]
   };
 
   // Upcoming activities
@@ -118,7 +103,6 @@ const Index = () => {
                 <DailyHabitCard 
                   className="animate-fade-in"
                   style={{ animationDelay: calculateAnimationDelay(0) }}
-                  currentHabit={dailyHabitData}
                 />
                 
                 <AlphaScoreCard 
@@ -191,7 +175,6 @@ const Index = () => {
                   <DailyHabitCard 
                     className="lg:col-span-3 animate-fade-in"
                     style={{ animationDelay: calculateAnimationDelay(0) }}
-                    currentHabit={dailyHabitData}
                   />
                   
                   <AlphaScoreCard 

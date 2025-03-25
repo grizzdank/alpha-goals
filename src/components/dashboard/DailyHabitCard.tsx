@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -20,6 +19,7 @@ interface Habit {
   isPinned?: boolean;
   days?: HabitDay[];
   domain?: "mind" | "body" | "purpose" | "relationships";
+  active?: boolean;
 }
 
 interface DailyHabitCardProps {
