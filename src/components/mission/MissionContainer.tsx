@@ -123,7 +123,7 @@ export function MissionContainer() {
             <p className="text-muted-foreground text-sm">Your 90-day focus period</p>
           </div>
           <Button asChild>
-            <Link to="/sprint" className="flex items-center">
+            <Link to="/sprints" className="flex items-center">
               View Sprint Details
               <ArrowRight className="ml-2 h-4 w-4" />
             </Link>

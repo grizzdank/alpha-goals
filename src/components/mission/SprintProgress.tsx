@@ -29,7 +29,7 @@ export function SprintProgress() {
       </p>
       
       <Link 
-        to="/mission" 
+        to="/sprints" 
         className="inline-flex items-center text-sm text-primary font-medium hover:underline"
       >
         View current sprint <ArrowRight className="ml-1 h-4 w-4" />
