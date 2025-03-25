@@ -55,6 +55,7 @@ export const ProgressOverview = () => {
   const navigate = useNavigate();
 
   const handleViewAlphaDetails = () => {
+    // Navigate to the current page with the 'alpha' tab state
     navigate('/analytics', { state: { tab: 'alpha' } });
   };
 

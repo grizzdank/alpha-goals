@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Layout } from "@/components/layout/Layout";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
@@ -14,9 +14,18 @@ import {
 import {
   AlphaScoreAnalytics
 } from "@/components/analytics/AlphaScoreAnalytics";
+import { useLocation } from "react-router-dom";
 
 const Analytics = () => {
+  const location = useLocation();
   const [activeTab, setActiveTab] = useState("progress");
+
+  // Check if there's a tab specified in the location state
+  useEffect(() => {
+    if (location.state && location.state.tab) {
+      setActiveTab(location.state.tab);
+    }
+  }, [location.state]);
 
   return (
     <Layout title="Analytics">
