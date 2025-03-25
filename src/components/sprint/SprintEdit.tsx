@@ -2,140 +2,109 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Save } from "lucide-react";
-import { toast } from "sonner";
-import { 
-  Card, 
-  CardContent, 
-  CardHeader, 
-  CardTitle, 
-  CardDescription
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
-import { 
-  SprintDetailsForm, 
-  sprintFormSchema, 
-  type SprintFormValues 
-} from "./SprintDetailsForm";
-import { 
-  SprintObjectivesSection 
-} from "./SprintObjectives";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useToast } from "@/hooks/use-toast";
+import { SprintDetailsForm, sprintFormSchema, SprintFormValues } from "./SprintDetailsForm";
+import { SprintObjectivesSection } from "./SprintObjectives";
 import { Objective } from "./SprintObjectiveItem";
 
 interface SprintEditProps {
-  onComplete?: () => void;
+  onComplete: () => void;
 }
 
-export function SprintEdit({ onComplete }: SprintEditProps = {}) {
-  // Sample initial data - in a real app, this would come from a database
+export function SprintEdit({ onComplete }: SprintEditProps) {
+  const { toast } = useToast();
+  const [activeTab, setActiveTab] = useState("details");
+  
+  // Sample data for the sprint form
+  const defaultValues: SprintFormValues = {
+    name: "Q3 2023 - Building Momentum",
+    description: "Focus on establishing key habits and making measurable progress towards financial goals.",
+    startDate: "2023-07-01",
+    endDate: "2023-09-30",
+  };
+  
+  // Sample objectives data
   const [objectives, setObjectives] = useState<Objective[]>([
-    {
-      id: "1",
-      title: "Launch Mission Planner Pro platform",
-      description: "Create the foundation for digital growth",
-      progress: 95,
-    },
-    {
-      id: "2",
-      title: "Produce weekly content",
-      description: "Articles, videos, and social media posts",
-      progress: 75,
-    },
-    {
-      id: "3",
-      title: "Grow newsletter subscribers",
-      description: "Target: 500 subscribers by end of sprint",
-      progress: 65,
-    },
+    { id: "1", title: "Complete MVP of personal website", description: "Finish building and launch the first version of my portfolio site", progress: 65 },
+    { id: "2", title: "Establish daily writing habit", description: "Write at least 500 words per day for the entire sprint", progress: 80 },
+    { id: "3", title: "Increase emergency fund", description: "Add $3000 to emergency savings", progress: 45 },
   ]);
-
-  // Form setup
+  
   const form = useForm<SprintFormValues>({
     resolver: zodResolver(sprintFormSchema),
-    defaultValues: {
-      name: "Q3 - Building digital presence",
-      description: "This sprint focuses on establishing and growing your online presence through content creation, community building, and digital tools.",
-      startDate: "2023-07-01",
-      endDate: "2023-09-30",
-    },
+    defaultValues,
   });
-
-  // Handle form submission
-  const onSubmit = (values: SprintFormValues) => {
-    // In a real app, this would save to a database
-    console.log("Sprint updated:", values);
+  
+  function onSubmit(data: SprintFormValues) {
+    // Here you would typically save the form data
+    console.log("Form submitted:", data);
     console.log("Objectives:", objectives);
-    toast.success("Sprint updated successfully");
     
-    if (onComplete) {
-      onComplete();
-    }
-  };
-
-  // Add a new objective
-  const addObjective = () => {
+    toast({
+      title: "Sprint updated",
+      description: "Your sprint has been updated successfully.",
+    });
+    
+    onComplete();
+  }
+  
+  // Objective functions
+  const handleAddObjective = () => {
     const newObjective: Objective = {
       id: Date.now().toString(),
       title: "",
       description: "",
-      progress: 0,
+      progress: 0
     };
+    
     setObjectives([...objectives, newObjective]);
   };
-
-  // Remove an objective
-  const removeObjective = (id: string) => {
+  
+  const handleRemoveObjective = (id: string) => {
     setObjectives(objectives.filter(obj => obj.id !== id));
   };
-
-  // Update an objective
-  const updateObjective = (id: string, field: keyof Objective, value: string | number) => {
+  
+  const handleUpdateObjective = (id: string, field: keyof Objective, value: string | number) => {
     setObjectives(objectives.map(obj => 
       obj.id === id ? { ...obj, [field]: value } : obj
     ));
   };
-
+  
   return (
-    <div className="space-y-6 animate-fade-in">
-      <Card>
-        <CardHeader>
-          <CardTitle>Edit Sprint</CardTitle>
-          <CardDescription>Update your sprint details, objectives, and track progress</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              {/* Sprint Details Form */}
-              <SprintDetailsForm form={form} />
-
-              {/* Objectives Section */}
+    <div className="space-y-6">
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+          <Tabs value={activeTab} onValueChange={setActiveTab}>
+            <TabsList>
+              <TabsTrigger value="details">Details</TabsTrigger>
+              <TabsTrigger value="objectives">Objectives</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="details" className="space-y-6 mt-6">
+              <SprintDetailsForm defaultValues={defaultValues} form={form} />
+            </TabsContent>
+            
+            <TabsContent value="objectives" className="space-y-6 mt-6">
               <SprintObjectivesSection
                 objectives={objectives}
-                onAddObjective={addObjective}
-                onRemoveObjective={removeObjective}
-                onUpdateObjective={updateObjective}
+                onAddObjective={handleAddObjective}
+                onRemoveObjective={handleRemoveObjective}
+                onUpdateObjective={handleUpdateObjective}
               />
-
-              <div className="flex justify-between">
-                {onComplete && (
-                  <Button 
-                    type="button" 
-                    variant="outline" 
-                    onClick={onComplete}
-                  >
-                    Cancel
-                  </Button>
-                )}
-                <Button type="submit" className="flex items-center gap-2">
-                  <Save className="h-4 w-4" />
-                  Save Sprint
-                </Button>
-              </div>
-            </form>
-          </Form>
-        </CardContent>
-      </Card>
+            </TabsContent>
+          </Tabs>
+          
+          <div className="flex justify-end gap-2">
+            <Button type="button" variant="outline" onClick={onComplete}>
+              Cancel
+            </Button>
+            <Button type="submit">Save Sprint</Button>
+          </div>
+        </form>
+      </Form>
     </div>
   );
 }

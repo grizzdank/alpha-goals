@@ -33,7 +33,7 @@ interface SprintDetailsFormProps {
   form: ReturnType<typeof useForm<SprintFormValues>>;
 }
 
-export function SprintDetailsForm({ form }: SprintDetailsFormProps) {
+export function SprintDetailsForm({ defaultValues, form }: SprintDetailsFormProps) {
   return (
     <>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
