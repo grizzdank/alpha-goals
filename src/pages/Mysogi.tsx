@@ -92,6 +92,14 @@ const Mysogi = () => {
   return (
     <Layout title="Mysogi Challenges" subtitle="Push your limits with focused challenges">
       <div className="max-w-7xl mx-auto animate-fade-in">
+        {/* Header description */}
+        <div className="mb-6 p-4 bg-primary/10 rounded-lg border border-primary/20">
+          <p className="text-base md:text-lg text-primary-foreground/90">
+            A Mysogi is an annual event or challenge so demanding that it defines your year. 
+            This section helps you plan and prepare for this defining experience.
+          </p>
+        </div>
+
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <div className="mb-6 flex items-center justify-between">
             <TabsList>
