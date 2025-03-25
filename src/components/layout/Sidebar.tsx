@@ -89,14 +89,14 @@ export function Sidebar({ className }: SidebarProps) {
           "flex items-center transition-opacity duration-300",
           collapsed ? "opacity-0 w-0 overflow-hidden" : "opacity-100"
         )}>
-          <div className="text-xl font-bold text-primary mr-2">Mission</div>
-          <div className="text-xl font-semibold dark:text-white">Planner</div>
+          <div className="text-xl font-bold text-primary mr-2">Alpha</div>
+          <div className="text-xl font-semibold dark:text-white">Goals</div>
         </div>
         <div className={cn(
           "text-xl font-bold text-primary transition-opacity duration-300",
           collapsed ? "opacity-100" : "opacity-0 w-0 overflow-hidden"
         )}>
-          MP
+          AG
         </div>
       </div>
       
