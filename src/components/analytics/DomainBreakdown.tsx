@@ -44,34 +44,35 @@ const distributionData = [
   { name: 'Relationships', habits: 4, completed: 112 },
 ];
 
+// Fixed chartConfig to use either color OR theme, not both
 const chartConfig = {
   mind: {
-    color: "#8B5CF6",
     label: "Mind",
+    // Removed color property
     theme: {
       light: "#8B5CF6",
       dark: "#A78BFA",
     }
   },
   body: {
-    color: "#3B82F6",
     label: "Body",
+    // Removed color property
     theme: {
       light: "#3B82F6",
       dark: "#60A5FA",
     }
   },
   purpose: {
-    color: "#10B981",
     label: "Purpose",
+    // Removed color property
     theme: {
       light: "#10B981",
       dark: "#34D399",
     }
   },
   relationships: {
-    color: "#F59E0B",
     label: "Relationships",
+    // Removed color property
     theme: {
       light: "#F59E0B",
       dark: "#FBBF24",
