@@ -8,6 +8,7 @@ import { CurrentSprint } from "@/components/mission/CurrentSprint";
 import { SprintEdit } from "@/components/sprint/SprintEdit";
 import { SprintArchive } from "@/components/sprint/SprintArchive";
 import { AlphaScoreRecorder } from "@/components/sprint/AlphaScoreRecorder";
+import { CreateSprintDialog } from "@/components/sprint/CreateSprintDialog";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -15,6 +16,7 @@ const Sprint = () => {
   const location = useLocation();
   const [isEditing, setIsEditing] = useState(false);
   const [showAlphaScoreDialog, setShowAlphaScoreDialog] = useState(false);
+  const [showCreateSprintDialog, setShowCreateSprintDialog] = useState(false);
   const [activeTab, setActiveTab] = useState("current");
   
   const isArchivePage = location.pathname.includes('/archive');
@@ -32,12 +34,25 @@ const Sprint = () => {
     }
   }, [location.state]);
 
+  useEffect(() => {
+    // Check for tab query parameter
+    const params = new URLSearchParams(location.search);
+    const tabParam = params.get("tab");
+    if (tabParam) {
+      setActiveTab(tabParam);
+    }
+  }, [location.search]);
+
   const toggleEdit = () => {
     setIsEditing(!isEditing);
   };
 
   const handleUpdateAlphaScore = () => {
     setShowAlphaScoreDialog(true);
+  };
+
+  const handleCreateNextSprint = () => {
+    setShowCreateSprintDialog(true);
   };
 
   return (
@@ -115,7 +130,7 @@ const Sprint = () => {
                 <p className="text-muted-foreground mb-6">
                   Plan your next 90-day focus period to continue making meaningful progress on your mission.
                 </p>
-                <Button>Create Next Sprint</Button>
+                <Button onClick={handleCreateNextSprint}>Create Next Sprint</Button>
               </div>
             </TabsContent>
           </Tabs>
@@ -124,6 +139,11 @@ const Sprint = () => {
         <AlphaScoreRecorder 
           open={showAlphaScoreDialog} 
           onOpenChange={setShowAlphaScoreDialog}
+        />
+        
+        <CreateSprintDialog
+          open={showCreateSprintDialog}
+          onOpenChange={setShowCreateSprintDialog}
         />
       </div>
     </Layout>
