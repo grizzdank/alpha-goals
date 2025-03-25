@@ -42,7 +42,7 @@ export const Layout: React.FC<LayoutProps> = ({
       </Navbar>
       <div className="flex flex-1">
         {!isMobile && <Sidebar className="h-[calc(100vh-4rem)] sticky top-16" />}
-        <main className="flex-1 p-4 md:p-6">{children}</main>
+        <main className="flex-1 p-3 md:p-6 w-full overflow-x-hidden">{children}</main>
       </div>
     </div>
   );

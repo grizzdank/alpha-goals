@@ -33,7 +33,7 @@ export function Navbar({ title = "Alpha Goals", subtitle, children }: NavbarProp
   
   return (
     <header className="sticky top-0 z-20 w-full h-16 bg-white/20 dark:bg-black/20 backdrop-blur-md border-b border-white/20 dark:border-white/10">
-      <div className="flex items-center justify-between h-full px-4 md:px-6">
+      <div className="flex items-center justify-between h-full px-3 md:px-6">
         {/* Left side - Title and mobile menu */}
         <div className="flex items-center">
           {/* Mobile menu trigger */}
@@ -49,11 +49,11 @@ export function Navbar({ title = "Alpha Goals", subtitle, children }: NavbarProp
         </div>
 
         {/* Right side - Actions */}
-        <div className="flex items-center space-x-2 md:space-x-4">
+        <div className="flex items-center space-x-1 md:space-x-4">
           {/* Theme Toggle */}
           <ThemeToggle />
           
-          {/* Search */}
+          {/* Search - Hide on smaller screens */}
           <div className="hidden sm:flex items-center relative">
             <Search className="absolute left-3 h-4 w-4 text-muted-foreground" />
             <input 
@@ -64,7 +64,7 @@ export function Navbar({ title = "Alpha Goals", subtitle, children }: NavbarProp
           </div>
 
           {/* Notifications */}
-          <button className="relative p-2 rounded-full hover:bg-white/30 dark:hover:bg-white/10 transition-colors">
+          <button className="relative p-1 md:p-2 rounded-full hover:bg-white/30 dark:hover:bg-white/10 transition-colors">
             <Bell className="h-5 w-5" />
             <span className="absolute top-1 right-1 flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>

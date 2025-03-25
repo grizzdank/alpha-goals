@@ -23,40 +23,40 @@ export const HabitCompletionChart = () => {
         <CardDescription>Percentage of completion for each habit</CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="h-[400px] w-full">
+        <div className="h-[350px] sm:h-[400px] w-full">
           <ChartContainer config={chartConfig}>
             <ResponsiveContainer width="100%" height="100%">
               <BarChart
                 data={habitChartData}
                 margin={{
                   top: 20,
-                  right: 30,
-                  left: 20,
+                  right: 20,
+                  left: 5,
                   bottom: 70,
                 }}
-                barSize={40}
+                barSize={30}
               >
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis 
                   dataKey="name" 
-                  tick={{ fontSize: 12 }}
+                  tick={{ fontSize: 10 }}
                   angle={-45}
                   textAnchor="end"
                   height={70}
                   interval={0}
                 />
                 <YAxis 
-                  tick={{ fontSize: 12 }}
+                  tick={{ fontSize: 10 }}
                   domain={[0, 100]}
                   label={{ 
-                    value: 'Percentage (%)', 
+                    value: '%', 
                     angle: -90, 
                     position: 'insideLeft',
-                    style: { textAnchor: 'middle' }
+                    style: { textAnchor: 'middle', fontSize: 12 }
                   }}
                 />
                 <Tooltip content={<CustomBarTooltip />} />
-                <Legend wrapperStyle={{ paddingTop: 20 }} />
+                <Legend wrapperStyle={{ paddingTop: 15, fontSize: 12 }} />
                 <Bar 
                   dataKey="completed" 
                   name="Completed %" 

@@ -32,11 +32,11 @@ const Analytics = () => {
       <div className="max-w-7xl mx-auto animate-fade-in">
         <div className="mb-6">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-4 max-w-md">
-              <TabsTrigger value="progress">Progress</TabsTrigger>
-              <TabsTrigger value="habits">Habits</TabsTrigger>
-              <TabsTrigger value="domains">Domains</TabsTrigger>
-              <TabsTrigger value="alpha">Alpha Score</TabsTrigger>
+            <TabsList className="w-full max-w-md overflow-x-auto flex flex-nowrap md:grid md:grid-cols-4">
+              <TabsTrigger value="progress" className="flex-shrink-0">Progress</TabsTrigger>
+              <TabsTrigger value="habits" className="flex-shrink-0">Habits</TabsTrigger>
+              <TabsTrigger value="domains" className="flex-shrink-0">Domains</TabsTrigger>
+              <TabsTrigger value="alpha" className="flex-shrink-0">Alpha Score</TabsTrigger>
             </TabsList>
             <TabsContent value="progress" className="mt-4">
               <ProgressOverview />
