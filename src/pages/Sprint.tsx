@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { Link } from "react-router-dom";
@@ -14,6 +15,7 @@ const Sprint = () => {
   const location = useLocation();
   const [isEditing, setIsEditing] = useState(false);
   const [showAlphaScoreDialog, setShowAlphaScoreDialog] = useState(false);
+  const [activeTab, setActiveTab] = useState("current");
   
   const isArchivePage = location.pathname.includes('/archive');
   const title = isArchivePage ? "Sprint Archive" : "Sprints";
@@ -21,6 +23,11 @@ const Sprint = () => {
   useEffect(() => {
     if (location.state && location.state.showAlphaScoreDialog) {
       setShowAlphaScoreDialog(true);
+      window.history.replaceState({}, document.title);
+    }
+    
+    if (location.state && location.state.tab) {
+      setActiveTab(location.state.tab);
       window.history.replaceState({}, document.title);
     }
   }, [location.state]);
@@ -39,7 +46,7 @@ const Sprint = () => {
         {isArchivePage ? (
           <SprintArchive />
         ) : (
-          <Tabs defaultValue="current" className="w-full">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <div className="mb-6 flex items-center justify-between">
               <TabsList>
                 <TabsTrigger value="current">Current Sprint</TabsTrigger>

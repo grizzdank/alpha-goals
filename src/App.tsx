@@ -12,6 +12,7 @@ import Analytics from "./pages/Analytics";
 import Habits from "./pages/Habits";
 import Financial from "./pages/Financial";
 import Settings from "./pages/Settings";
+import Mysogi from "./pages/Mysogi";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -31,6 +32,7 @@ const App = () => (
             <Route path="/habits" element={<Habits />} />
             <Route path="/analytics" element={<Analytics />} />
             <Route path="/financial" element={<Financial />} />
+            <Route path="/mysogi" element={<Mysogi />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="*" element={<NotFound />} />
           </Routes>

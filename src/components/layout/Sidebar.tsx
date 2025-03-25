@@ -11,7 +11,8 @@ import {
   Settings, 
   ChevronLeft, 
   ChevronRight,
-  ListChecks
+  ListChecks,
+  Award
 } from 'lucide-react';
 
 const navItems = [
@@ -38,6 +39,12 @@ const navItems = [
     icon: ListChecks, 
     path: '/habits',
     description: 'Manage your daily habits'
+  },
+  { 
+    name: 'Mysogi', 
+    icon: Award, 
+    path: '/mysogi',
+    description: 'Annual and monthly challenges'
   },
   { 
     name: 'Analytics', 

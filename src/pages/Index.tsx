@@ -1,5 +1,6 @@
 
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
 import { DailyHabitCard } from "@/components/dashboard/DailyHabitCard";
 import { AlphaScoreCard } from "@/components/dashboard/AlphaScoreCard";
@@ -13,6 +14,7 @@ import { Button } from "@/components/ui/button";
 const Index = () => {
   const [loading, setLoading] = useState(true);
   const [showWeeklyReview, setShowWeeklyReview] = useState(false);
+  const navigate = useNavigate();
 
   // Simulate data loading
   useEffect(() => {
@@ -51,6 +53,7 @@ const Index = () => {
       date: "Tomorrow, 10:00 AM",
       icon: Target,
       color: "bg-relationships/10 text-relationships",
+      action: () => navigate('/sprints', { state: { tab: 'next' } }),
     },
     {
       id: 3,
@@ -59,6 +62,7 @@ const Index = () => {
       date: "Starts in 2 days",
       icon: Calendar,
       color: "bg-mind/10 text-mind",
+      action: () => navigate('/mysogi', { state: { tab: 'monthly' } }),
     },
   ];
 
