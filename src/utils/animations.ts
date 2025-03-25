@@ -1,4 +1,6 @@
 
+import React from "react";
+
 interface AnimationDelayProps {
   children: React.ReactNode;
   delay: number;
@@ -18,8 +20,8 @@ export const staggeredChildren = (baseDelay: number = 100, count: number) => {
 /**
  * Calculate the animation delay for an item based on its index
  */
-export const calculateAnimationDelay = (index: number, baseDelay: number = 100) => {
-  return baseDelay * (index + 1);
+export const calculateAnimationDelay = (index: number, baseDelay: number = 100): string => {
+  return `${baseDelay * (index + 1)}ms`;
 };
 
 /**

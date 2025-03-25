@@ -20,7 +20,7 @@ interface ChallengeCardProps {
   getCategoryIcon: (categoryId: string) => React.ElementType;
   getCategoryColor: (categoryId: string) => string;
   getStatusBadge: (status: string) => React.ReactNode;
-  animationDelay: number;
+  animationDelay: string;
 }
 
 export const ChallengeCard: React.FC<ChallengeCardProps> = ({
@@ -37,7 +37,7 @@ export const ChallengeCard: React.FC<ChallengeCardProps> = ({
     <Card 
       key={challenge.id} 
       className="animate-fade-in hover-lift cursor-pointer"
-      style={{ animationDelay: `${animationDelay}ms` }}
+      style={{ animationDelay }}
     >
       <CardHeader className="pb-2">
         <div className="flex justify-between items-start">
