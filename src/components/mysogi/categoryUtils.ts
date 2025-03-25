@@ -29,7 +29,7 @@ export const getCategoryColor = (categoryId: string) => {
   return category.color;
 };
 
-export const getStatusBadge = (status: string) => {
+export const getStatusBadge = (status: string): React.ReactNode => {
   switch (status) {
     case "active":
       return <Badge className="bg-green-500">Active</Badge>;
