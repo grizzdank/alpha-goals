@@ -9,7 +9,6 @@ import {
   SheetContent,
   SheetTrigger
 } from "@/components/ui/sheet";
-import { HabitForm } from "@/components/sprint/HabitForm";
 import { CurrentSprint } from "@/components/mission/CurrentSprint";
 import { SprintEdit } from "@/components/sprint/SprintEdit";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -60,7 +59,6 @@ const Sprint = () => {
                     </Badge>
                   </div>
                   <CurrentSprint />
-                  <HabitForm />
                 </TabsContent>
                 <TabsContent value="edit" className="mt-4">
                   <SprintEdit />
