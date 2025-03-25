@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Award, Calendar, CheckCircle, Edit, ListChecks } from "lucide-react";
 import { calculateAnimationDelay } from "@/utils/animations";
 import { AnnualChallengeForm } from "./AnnualChallengeForm";
+import { AnnualChallengeProgressDialog } from "./AnnualChallengeProgressDialog";
 import { toast } from "sonner";
 
 interface MilestoneProps {
@@ -35,6 +36,10 @@ export const AnnualChallenge: React.FC<AnnualChallengeProps> = ({
   getCategoryColor 
 }) => {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isProgressDialogOpen, setIsProgressDialogOpen] = useState(false);
+  const [completedPrepSteps, setCompletedPrepSteps] = useState<boolean[]>(
+    challenge.prepSteps ? challenge.prepSteps.map(() => false) : []
+  );
   
   const handleEditChallenge = (updatedChallenge: any) => {
     setChallenge({
@@ -42,6 +47,25 @@ export const AnnualChallenge: React.FC<AnnualChallengeProps> = ({
       ...updatedChallenge
     });
     toast.success("Annual challenge updated successfully!");
+  };
+  
+  const handleUpdateProgress = (data: {
+    progress: number;
+    completedPrepSteps: boolean[];
+    completedMilestones: boolean[];
+  }) => {
+    setCompletedPrepSteps(data.completedPrepSteps);
+    
+    const updatedMilestones = challenge.milestones.map((milestone, index) => ({
+      ...milestone,
+      completed: data.completedMilestones[index]
+    }));
+    
+    setChallenge({
+      ...challenge,
+      progress: data.progress,
+      milestones: updatedMilestones
+    });
   };
   
   return (
@@ -109,11 +133,14 @@ export const AnnualChallenge: React.FC<AnnualChallengeProps> = ({
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {challenge.prepSteps.map((step, index) => (
-                <div key={index} className="flex items-start gap-2 bg-accent/20 p-3 rounded-md">
-                  <span className="bg-primary/20 text-primary h-6 w-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                    {index + 1}
+                <div 
+                  key={index} 
+                  className={`flex items-start gap-2 ${completedPrepSteps[index] ? 'bg-green-100 dark:bg-green-900/20' : 'bg-accent/20'} p-3 rounded-md`}
+                >
+                  <span className={`${completedPrepSteps[index] ? 'bg-green-500/20 text-green-600 dark:text-green-400' : 'bg-primary/20 text-primary'} h-6 w-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5`}>
+                    {completedPrepSteps[index] ? <CheckCircle className="h-4 w-4" /> : index + 1}
                   </span>
-                  <p className="text-sm">{step}</p>
+                  <p className={`text-sm ${completedPrepSteps[index] ? 'line-through opacity-70' : ''}`}>{step}</p>
                 </div>
               ))}
             </div>
@@ -135,7 +162,12 @@ export const AnnualChallenge: React.FC<AnnualChallengeProps> = ({
         </div>
       </div>
       
-      <Button className="mb-6">Update Annual Challenge Progress</Button>
+      <Button 
+        className="mb-6"
+        onClick={() => setIsProgressDialogOpen(true)}
+      >
+        Update Annual Challenge Progress
+      </Button>
       
       {/* Edit Annual Challenge Dialog */}
       <AnnualChallengeForm
@@ -151,6 +183,15 @@ export const AnnualChallenge: React.FC<AnnualChallengeProps> = ({
         open={isEditDialogOpen}
         onOpenChange={setIsEditDialogOpen}
         onSubmit={handleEditChallenge}
+      />
+      
+      {/* Progress Update Dialog */}
+      <AnnualChallengeProgressDialog
+        open={isProgressDialogOpen}
+        onOpenChange={setIsProgressDialogOpen}
+        challenge={challenge}
+        onUpdateProgress={handleUpdateProgress}
+        completedPrepSteps={completedPrepSteps}
       />
     </>
   );
