@@ -19,7 +19,7 @@ export const staggeredChildren = (baseDelay: number = 100, count: number) => {
  * Calculate the animation delay for an item based on its index
  */
 export const calculateAnimationDelay = (index: number, baseDelay: number = 100) => {
-  return `${baseDelay * (index + 1)}ms`;
+  return baseDelay * (index + 1);
 };
 
 /**

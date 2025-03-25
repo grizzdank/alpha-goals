@@ -54,7 +54,7 @@ export const MonthlyChallenges: React.FC<MonthlyChallengesProps> = ({
         ))}
         
         {/* Add Challenge Card */}
-        <Card className="border-dashed border-2 flex items-center justify-center h-[300px] animate-fade-in cursor-pointer hover:bg-accent/50 transition-colors group" style={{ animationDelay: `${calculateAnimationDelay(challenges.length, 50)}ms` }}>
+        <Card className="border-dashed border-2 flex items-center justify-center h-[300px] animate-fade-in cursor-pointer hover:bg-accent/50 transition-colors group" style={{ animationDelay: calculateAnimationDelay(challenges.length, 50) }}>
           <div className="flex flex-col items-center text-muted-foreground group-hover:text-foreground">
             <PlusCircle className="h-10 w-10 mb-2 group-hover:text-primary transition-colors" />
             <p className="font-medium">Create New Challenge</p>
