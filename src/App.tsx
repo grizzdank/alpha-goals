@@ -10,6 +10,7 @@ import Mission from "./pages/Mission";
 import Sprint from "./pages/Sprint";
 import Analytics from "./pages/Analytics";
 import Habits from "./pages/Habits";
+import Financial from "./pages/Financial";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -27,7 +28,7 @@ const App = () => (
             <Route path="/sprints" element={<Sprint />} />
             <Route path="/habits" element={<Habits />} />
             <Route path="/analytics" element={<Analytics />} />
-            <Route path="/financial" element={<NotFound />} />
+            <Route path="/financial" element={<Financial />} />
             <Route path="/settings" element={<NotFound />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
