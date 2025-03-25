@@ -3,6 +3,7 @@ import React from 'react';
 import { cn } from '@/lib/utils';
 import { ProgressCircle } from '../ui/ProgressCircle';
 import { TrendingUp } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 interface CategoryScore {
   category: 'relationships' | 'purpose' | 'body' | 'mind';
@@ -18,8 +19,20 @@ interface AlphaScoreCardProps {
 }
 
 export function AlphaScoreCard({ totalScore, categoryScores, className, style }: AlphaScoreCardProps) {
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    navigate('/analytics', { state: { tab: 'alpha' } });
+  };
+
   return (
-    <div className={cn("glass rounded-2xl p-6 hover-lift hover-scale", className)} style={style}>
+    <div 
+      className={cn("glass rounded-2xl p-6 hover-lift hover-scale cursor-pointer", className)} 
+      style={style}
+      onClick={handleClick}
+      role="button"
+      aria-label="View Alpha Score Details"
+    >
       <div className="flex justify-between items-start mb-6">
         <div>
           <h3 className="text-lg font-semibold text-foreground">Alpha Score</h3>
