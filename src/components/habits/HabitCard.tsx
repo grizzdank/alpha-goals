@@ -54,7 +54,7 @@ export function HabitCard({
 
   // Get domain color class for visualization
   const domainColorClass = getDomainColorClass(habit.domain);
-  const colorClass = `bg-${habit.domain} text-white`;
+  const colorClass = `bg-${habit.domain}`;
 
   return (
     <Card key={habit.id} className={`hover:shadow-md transition-shadow ${!habit.active ? 'opacity-70' : ''}`}>
@@ -78,24 +78,27 @@ export function HabitCard({
         </div>
       </CardHeader>
       <CardContent className="pb-2">
-        <StreakVisualization 
-          streak={habit.streak} 
-          habitDays={habit.days}
-        />
-        
-        {habit.active && (
-          <div className="mt-4 border-t pt-3">
-            <p className="text-sm text-muted-foreground mb-2">
-              Click on a day to mark as completed:
-            </p>
+        <div className="flex flex-col">
+          <div className="text-sm font-medium mb-1">
+            {habit.streak} day streak
+          </div>
+          
+          {habit.active && (
             <HabitCalendarWeek 
               habitDays={habit.days || []} 
               colorClass={colorClass}
               onToggleDay={handleToggleDay}
               readOnly={!habit.active}
             />
-          </div>
-        )}
+          )}
+          
+          {!habit.active && (
+            <StreakVisualization 
+              streak={habit.streak} 
+              habitDays={habit.days}
+            />
+          )}
+        </div>
       </CardContent>
       <CardFooter className="flex justify-between">
         <div className="flex gap-2">
