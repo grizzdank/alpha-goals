@@ -11,6 +11,8 @@ import { Form } from "@/components/ui/form";
 import { SprintDetailsForm } from "./SprintDetailsForm";
 import { SprintObjectivesSection } from "./SprintObjectives";
 import { Objective } from "./SprintObjectiveItem";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 
 interface CreateSprintDialogProps {
   open: boolean;
@@ -19,10 +21,12 @@ interface CreateSprintDialogProps {
 
 export function CreateSprintDialog({ open, onOpenChange }: CreateSprintDialogProps) {
   const { toast } = useToast();
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState("details");
   const [objectives, setObjectives] = useState<Objective[]>([
     { id: "1", title: "", description: "", progress: 0 }
   ]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
   // Default values for the next sprint (using current date + 90 days for end date)
   const today = new Date();
@@ -69,7 +73,18 @@ export function CreateSprintDialog({ open, onOpenChange }: CreateSprintDialogPro
     ));
   };
   
-  function onSubmit(data: SprintFormValues) {
+  async function onSubmit(data: SprintFormValues) {
+    if (!user) {
+      toast({
+        title: "Authentication required",
+        description: "Please sign in to create a sprint.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    setIsSubmitting(true);
+    
     // Validate that the objectives have titles
     const validObjectives = objectives.filter(obj => obj.title.trim() !== "");
     
@@ -79,31 +94,60 @@ export function CreateSprintDialog({ open, onOpenChange }: CreateSprintDialogPro
       progress: 0
     }));
     
-    // In a real app, this would save to database
-    console.log("Creating new sprint:", data);
-    console.log("With objectives:", finalObjectives);
-    
-    // Store in localStorage for now
-    const existingSprints = JSON.parse(localStorage.getItem('sprints') || '[]');
-    const newSprint = {
-      ...data,
-      id: Date.now().toString(),
-      createdAt: new Date().toISOString(),
-      objectives: finalObjectives,
-      progress: 0
-    };
-    
-    localStorage.setItem('sprints', JSON.stringify([...existingSprints, newSprint]));
-    
-    toast({
-      title: "Sprint created",
-      description: "Your next sprint has been created successfully."
-    });
-    
-    onOpenChange(false);
-    
-    // Redirect to the current sprint tab
-    window.location.href = "/sprints?tab=current";
+    try {
+      // Insert the sprint to Supabase
+      const { data: sprintData, error: sprintError } = await supabase
+        .from('sprints')
+        .insert({
+          user_id: user.id,
+          name: data.name,
+          description: data.description,
+          start_date: data.startDate,
+          end_date: data.endDate,
+          progress: 0,
+          created_at: new Date().toISOString(),
+        })
+        .select()
+        .single();
+        
+      if (sprintError) throw sprintError;
+      
+      if (finalObjectives.length > 0 && sprintData) {
+        // Now insert objectives
+        const objectivesWithSprintId = finalObjectives.map(obj => ({
+          sprint_id: sprintData.id,
+          title: obj.title,
+          description: obj.description || "",
+          progress: 0,
+        }));
+        
+        const { error: objectivesError } = await supabase
+          .from('sprint_objectives')
+          .insert(objectivesWithSprintId);
+          
+        if (objectivesError) throw objectivesError;
+      }
+      
+      toast({
+        title: "Sprint created",
+        description: "Your next sprint has been created successfully."
+      });
+      
+      onOpenChange(false);
+      
+      // Redirect to the current sprint tab
+      window.location.href = "/sprints?tab=current";
+      
+    } catch (error: any) {
+      console.error("Error creating sprint:", error);
+      toast({
+        title: "Failed to create sprint",
+        description: error.message || "An unexpected error occurred.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   }
   
   return (
@@ -142,7 +186,9 @@ export function CreateSprintDialog({ open, onOpenChange }: CreateSprintDialogPro
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
                 Cancel
               </Button>
-              <Button type="submit">Create Sprint</Button>
+              <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting ? "Creating..." : "Create Sprint"}
+              </Button>
             </div>
           </form>
         </Form>

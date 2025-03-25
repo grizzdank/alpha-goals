@@ -1,8 +1,13 @@
 
 import React from 'react';
-import { Bell, Search, User } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Bell, LogOut, Search, Settings, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
+import { useAuth } from '@/contexts/AuthContext';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Button } from '@/components/ui/button';
 
 interface NavbarProps {
   title?: string;
@@ -11,6 +16,21 @@ interface NavbarProps {
 }
 
 export function Navbar({ title = "Mission Planner Pro", subtitle, children }: NavbarProps) {
+  const { user, profile, signOut } = useAuth();
+  
+  const getInitials = () => {
+    if (profile?.username) {
+      return profile.username.slice(0, 2).toUpperCase();
+    }
+    if (profile?.full_name) {
+      return profile.full_name.split(' ').map((n: string) => n[0]).join('').toUpperCase();
+    }
+    if (user?.email) {
+      return user.email.slice(0, 2).toUpperCase();
+    }
+    return 'U';
+  };
+  
   return (
     <header className="sticky top-0 z-20 w-full h-16 bg-white/20 dark:bg-black/20 backdrop-blur-md border-b border-white/20 dark:border-white/10">
       <div className="flex items-center justify-between h-full px-4 md:px-6">
@@ -52,13 +72,48 @@ export function Navbar({ title = "Mission Planner Pro", subtitle, children }: Na
             </span>
           </button>
 
-          {/* User avatar */}
+          {/* User avatar / Auth buttons */}
           <div className="flex items-center">
-            <button className="flex items-center hover:opacity-80 transition-opacity">
-              <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-medium">
-                <User className="h-5 w-5" />
-              </div>
-            </button>
+            {user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button className="flex items-center hover:opacity-80 transition-opacity">
+                    <Avatar className="h-8 w-8 border border-primary/20">
+                      <AvatarImage src={profile?.avatar_url} />
+                      <AvatarFallback className="bg-primary text-primary-foreground text-xs">
+                        {getInitials()}
+                      </AvatarFallback>
+                    </Avatar>
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuLabel>
+                    <div className="flex flex-col space-y-1">
+                      <p className="text-sm font-medium leading-none">{profile?.username || profile?.full_name || 'User'}</p>
+                      <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
+                    </div>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <Link to="/settings">
+                    <DropdownMenuItem>
+                      <Settings className="mr-2 h-4 w-4" />
+                      <span>Settings</span>
+                    </DropdownMenuItem>
+                  </Link>
+                  <DropdownMenuItem onClick={() => signOut()}>
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <span>Sign out</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Link to="/auth">
+                <Button variant="outline" size="sm" className="flex items-center gap-1">
+                  <User className="h-4 w-4" />
+                  Sign In
+                </Button>
+              </Link>
+            )}
           </div>
         </div>
       </div>
