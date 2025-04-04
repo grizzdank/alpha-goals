@@ -1,127 +1,130 @@
-
-import React from "react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Badge } from "@/components/ui/badge";
-import { Edit, Trash2, Pin, PinOff } from "lucide-react";
-import { HabitCalendarWeek } from "@/components/dashboard/HabitCalendarWeek";
-import { toast } from "sonner";
-
-interface HabitDay {
-  date: string;
-  completed: boolean;
-}
+import React from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Flame, Pin, Brain, Heart, Target, Users, Pencil, Trash2 } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import type { HabitWithCompletions } from '@/services/habitService';
+import { HabitStreak } from './HabitStreak';
 
 interface HabitCardProps {
-  habit: {
-    id: number;
-    title: string;
-    description: string;
-    domain: string;
-    active: boolean;
-    streak: number;
-    createdAt: string;
-    isPinned: boolean;
-    days?: HabitDay[];
-  };
-  onToggleActive: (id: number) => void;
-  onEdit: (habit: any) => void;
-  onDelete: (habit: any) => void;
-  onTogglePin: (habit: any) => void;
-  onMarkCompleted?: (habitId: number, date: string) => void;
-  getDomainIcon: (domain: string) => React.ReactNode;
-  getDomainColorClass: (domain: string) => string;
+  habit: HabitWithCompletions;
+  onToggleCompletion: (habitId: string, date: string) => Promise<void>;
+  onTogglePin?: (habitId: string) => Promise<void>;
+  onEdit: (habitId: string) => void;
+  onDelete: (habitId: string) => void;
+  className?: string;
 }
 
-export function HabitCard({
-  habit,
-  onToggleActive,
-  onEdit,
-  onDelete,
-  onTogglePin,
-  onMarkCompleted,
-  getDomainIcon,
-  getDomainColorClass
-}: HabitCardProps) {
-  // Handle mark completed by date
-  const handleToggleDay = (date: string) => {
-    if (onMarkCompleted) {
-      onMarkCompleted(habit.id, date);
+const domainIcons = {
+  mind: Brain,
+  body: Heart,
+  purpose: Target,
+  relationships: Users
+};
+
+export function HabitCard({ habit, onToggleCompletion, onTogglePin, onEdit, onDelete, className }: HabitCardProps) {
+  const today = new Date().toISOString().split('T')[0];
+  const isCompletedToday = habit.habit_completions.some(
+    completion => completion.completed_date === today
+  );
+
+  const DomainIcon = domainIcons[habit.domain];
+
+  // Convert habit_completions to the format expected by HabitStreak
+  const completions = habit.habit_completions.map(completion => ({
+    date: completion.completed_date,
+    completed: completion.is_completed
+  }));
+
+  const handleToggleCompletion = async () => {
+    await onToggleCompletion(habit.id, today);
+  };
+
+  const handleTogglePin = async () => {
+    if (onTogglePin) {
+      await onTogglePin(habit.id);
     }
   };
 
-  // Get domain color class for visualization
-  const domainColorClass = getDomainColorClass(habit.domain);
-  const colorClass = `bg-${habit.domain}`;
-
   return (
-    <Card key={habit.id} className={`hover:shadow-md transition-shadow ${!habit.active ? 'opacity-70' : ''}`}>
-      <CardHeader className="pb-2">
-        <div className="flex justify-between items-start">
-          <div className="flex items-center gap-3">
-            <Checkbox 
-              id={`active-${habit.id}`}
-              checked={habit.active}
-              onCheckedChange={() => onToggleActive(habit.id)}
-            />
-            <div>
-              <CardTitle className="text-base">{habit.title}</CardTitle>
-              <CardDescription>{habit.description}</CardDescription>
-            </div>
+    <Card className={cn(
+      'transition-all duration-200',
+      isCompletedToday && 'bg-primary/5',
+      className
+    )}>
+      <CardHeader className="pb-3">
+        <div className="flex items-start justify-between">
+          <div className="flex items-center gap-2">
+            <DomainIcon className="h-5 w-5 text-muted-foreground" />
+            <CardTitle className="text-lg font-semibold">{habit.title}</CardTitle>
           </div>
-          <Badge className={`flex items-center gap-1 ${getDomainColorClass(habit.domain)}`}>
-            {getDomainIcon(habit.domain)}
-            <span>{habit.domain.charAt(0).toUpperCase() + habit.domain.slice(1)}</span>
-          </Badge>
+          {onTogglePin && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleTogglePin}
+              className={cn(
+                'h-8 w-8',
+                habit.is_pinned && 'text-primary'
+              )}
+            >
+              <Pin className="h-4 w-4" />
+            </Button>
+          )}
+          <div className="flex gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => onEdit(habit.id)}
+            >
+              <Pencil className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => onDelete(habit.id)}
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
       </CardHeader>
-      <CardContent className="pb-2">
-        <div className="flex flex-col">
-          <div className="text-sm font-medium mb-1">
-            {habit.streak} day streak
+      <CardContent>
+        <div className="flex flex-col gap-4">
+          {habit.description && (
+            <p className="text-sm text-muted-foreground">
+              {habit.description}
+            </p>
+          )}
+          
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Badge variant={isCompletedToday ? 'default' : 'outline'}>
+                {isCompletedToday ? 'Completed' : 'Not Completed'}
+              </Badge>
+              {habit.streak > 0 && (
+                <Badge variant="secondary" className="flex items-center gap-1">
+                  <Flame className="h-3 w-3 text-orange-500" />
+                  {habit.streak} day streak
+                </Badge>
+              )}
+            </div>
+            
+            <Button
+              variant={isCompletedToday ? 'outline' : 'default'}
+              onClick={handleToggleCompletion}
+            >
+              {isCompletedToday ? 'Undo' : 'Complete'}
+            </Button>
           </div>
           
-          <HabitCalendarWeek 
-            habitDays={habit.days || []} 
-            colorClass={colorClass}
-            onToggleDay={handleToggleDay}
-            readOnly={!habit.active}
+          <HabitStreak 
+            habitName={habit.title}
+            completions={completions}
           />
         </div>
       </CardContent>
-      <CardFooter className="flex justify-between">
-        <div className="flex gap-2">
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            className="gap-1"
-            onClick={() => onEdit(habit)}
-          >
-            <Edit className="h-4 w-4" />
-            Edit
-          </Button>
-          <Button 
-            variant="ghost" 
-            size="sm"
-            className="gap-1"
-            onClick={() => onTogglePin(habit)}
-            title={habit.isPinned ? "Unpin from dashboard" : "Pin to dashboard"}
-          >
-            {habit.isPinned ? <PinOff className="h-4 w-4" /> : <Pin className="h-4 w-4" />}
-            {habit.isPinned ? "Unpin" : "Pin"}
-          </Button>
-        </div>
-        <Button 
-          variant="ghost" 
-          size="sm"
-          className="text-destructive hover:text-destructive hover:bg-destructive/10 dark:text-red-400 dark:hover:text-red-300 dark:hover:bg-red-900/30 gap-1"
-          onClick={() => onDelete(habit)}
-        >
-          <Trash2 className="h-4 w-4" />
-          Delete
-        </Button>
-      </CardFooter>
     </Card>
   );
 }

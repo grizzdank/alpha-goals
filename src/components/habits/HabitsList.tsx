@@ -7,174 +7,146 @@ import { EmptyHabits } from "./EmptyHabits";
 import { DeleteHabitDialog } from "./DeleteHabitDialog";
 import { EditHabitDialog } from "./EditHabitDialog";
 import { getDomainIcon, getDomainColorClass } from "./domainUtils";
-
-const sampleHabits = [
-  {
-    id: 1,
-    title: "20-minute meditation",
-    description: "Mindfulness practice every morning",
-    domain: "mind",
-    active: true,
-    streak: 5,
-    createdAt: "2023-06-01",
-    isPinned: true,
-    days: [
-      { date: "2023-06-01", completed: true },
-      { date: "2023-06-02", completed: true },
-      { date: "2023-06-03", completed: true },
-      { date: "2023-06-04", completed: true },
-      { date: "2023-06-05", completed: true },
-      { date: "2023-06-06", completed: false }
-    ]
-  },
-  {
-    id: 2,
-    title: "30-minute workout",
-    description: "Strength training or cardio",
-    domain: "body",
-    active: true,
-    streak: 3,
-    createdAt: "2023-06-05",
-    isPinned: false,
-    days: [
-      { date: "2023-06-05", completed: true },
-      { date: "2023-06-06", completed: true },
-      { date: "2023-06-07", completed: true }
-    ]
-  },
-  {
-    id: 3,
-    title: "Read for 20 minutes",
-    description: "Read non-fiction or personal development",
-    domain: "mind",
-    active: true,
-    streak: 7,
-    createdAt: "2023-06-10",
-    isPinned: false,
-    days: [
-      { date: "2023-06-10", completed: true },
-      { date: "2023-06-11", completed: true },
-      { date: "2023-06-12", completed: true },
-      { date: "2023-06-13", completed: true },
-      { date: "2023-06-14", completed: true },
-      { date: "2023-06-15", completed: true },
-      { date: "2023-06-16", completed: true }
-    ]
-  },
-  {
-    id: 4,
-    title: "Call a friend or family member",
-    description: "Connect with someone important",
-    domain: "relationships",
-    active: false,
-    streak: 0,
-    createdAt: "2023-06-15",
-    isPinned: false,
-    days: []
-  },
-  {
-    id: 5,
-    title: "Work on personal project",
-    description: "Dedicate time to meaningful project",
-    domain: "purpose",
-    active: true,
-    streak: 4,
-    createdAt: "2023-06-20",
-    isPinned: false,
-    days: [
-      { date: "2023-06-20", completed: true },
-      { date: "2023-06-21", completed: true },
-      { date: "2023-06-22", completed: true },
-      { date: "2023-06-23", completed: true }
-    ]
-  }
-];
+import { habitService, type HabitWithCompletions } from "@/services/habitService";
+import { useAuth } from "@/hooks/use-auth";
+import { supabase } from "@/integrations/supabase/client";
 
 export function HabitsList() {
-  const [habits, setHabits] = useState([]);
-  const [habitToDelete, setHabitToDelete] = useState(null);
-  const [habitToEdit, setHabitToEdit] = useState(null);
+  const { user } = useAuth();
+  const [habits, setHabits] = useState<HabitWithCompletions[]>([]);
+  const [habitToDelete, setHabitToDelete] = useState<HabitWithCompletions | null>(null);
+  const [habitToEdit, setHabitToEdit] = useState<HabitWithCompletions | null>(null);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [filter, setFilter] = useState("all");
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const storedHabits = localStorage.getItem('habits');
-    if (storedHabits) {
-      setHabits(JSON.parse(storedHabits));
-    } else {
-      setHabits(sampleHabits);
-      localStorage.setItem('habits', JSON.stringify(sampleHabits));
-    }
-  }, []);
+    const loadHabits = async () => {
+      if (!user?.id) return;
+      
+      try {
+        const activeHabits = await habitService.getActiveHabits(user.id);
+        setHabits(activeHabits);
+      } catch (error) {
+        console.error('Error loading habits:', error);
+        toast.error('Failed to load habits');
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-  useEffect(() => {
-    if (habits.length > 0) {
-      localStorage.setItem('habits', JSON.stringify(habits));
-    }
-  }, [habits]);
+    loadHabits();
+  }, [user?.id]);
   
   const activeHabitsCount = habits.filter(h => h.active).length;
   const inactiveHabitsCount = habits.filter(h => !h.active).length;
   
-  const toggleActive = (id) => {
-    setHabits(habits.map(habit => {
-      if (habit.id === id) {
-        const newActive = !habit.active;
-        
-        if (newActive) {
-          toast.success("Habit activated");
-        } else {
-          toast.info("Habit deactivated");
-        }
-        
-        return { ...habit, active: newActive };
+  const toggleActive = async (habitId: string) => {
+    const habit = habits.find(h => h.id === habitId);
+    if (!habit) return;
+
+    try {
+      const updatedHabit = await habitService.getHabitById(habitId);
+      if (updatedHabit) {
+        const newActive = !updatedHabit.active;
+        await supabase
+          .from('habits')
+          .update({ active: newActive })
+          .eq('id', habitId);
+
+        setHabits(habits.map(h => {
+          if (h.id === habitId) {
+            if (newActive) {
+              toast.success("Habit activated");
+            } else {
+              toast.info("Habit deactivated");
+            }
+            return { ...h, active: newActive };
+          }
+          return h;
+        }));
       }
-      return habit;
-    }));
+    } catch (error) {
+      console.error('Error toggling habit active state:', error);
+      toast.error('Failed to update habit');
+    }
   };
   
-  const handleDeleteClick = (habit) => {
+  const handleDeleteClick = (habit: HabitWithCompletions) => {
     setHabitToDelete(habit);
     setShowDeleteDialog(true);
   };
 
-  const handleEditClick = (habit) => {
+  const handleEditClick = (habit: HabitWithCompletions) => {
     setHabitToEdit(habit);
     setShowEditDialog(true);
   };
   
-  const togglePinned = (habit) => {
-    const updatedHabits = habits.map(h => ({
-      ...h,
-      isPinned: h.id === habit.id ? !h.isPinned : h.isPinned
-    }));
-    
-    setHabits(updatedHabits);
-    
-    if (!habit.isPinned) {
-      toast.success(`"${habit.title}" pinned to dashboard`);
-    } else {
-      toast.info(`"${habit.title}" unpinned from dashboard`);
+  const togglePinned = async (habitId: string) => {
+    const habit = habits.find(h => h.id === habitId);
+    if (!habit) return;
+
+    try {
+      await supabase
+        .from('habits')
+        .update({ is_pinned: !habit.is_pinned })
+        .eq('id', habitId);
+
+      setHabits(habits.map(h => ({
+        ...h,
+        is_pinned: h.id === habitId ? !h.is_pinned : h.is_pinned
+      })));
+      
+      if (!habit.is_pinned) {
+        toast.success(`"${habit.title}" pinned to dashboard`);
+      } else {
+        toast.info(`"${habit.title}" unpinned from dashboard`);
+      }
+    } catch (error) {
+      console.error('Error toggling habit pin state:', error);
+      toast.error('Failed to update habit');
     }
   };
   
-  const confirmDelete = () => {
-    if (habitToDelete) {
+  const confirmDelete = async () => {
+    if (!habitToDelete) return;
+
+    try {
+      await supabase
+        .from('habits')
+        .delete()
+        .eq('id', habitToDelete.id);
+
       setHabits(habits.filter(h => h.id !== habitToDelete.id));
       toast.success("Habit deleted successfully");
+    } catch (error) {
+      console.error('Error deleting habit:', error);
+      toast.error('Failed to delete habit');
+    } finally {
       setShowDeleteDialog(false);
       setHabitToDelete(null);
     }
   };
   
-  const handleSaveEdit = (updatedHabit) => {
-    setHabits(habits.map(habit => 
-      habit.id === updatedHabit.id ? updatedHabit : habit
-    ));
-    setShowEditDialog(false);
-    setHabitToEdit(null);
-    toast.success("Habit updated successfully");
+  const handleSaveEdit = async (updatedHabit: HabitWithCompletions) => {
+    try {
+      await supabase
+        .from('habits')
+        .update(updatedHabit)
+        .eq('id', updatedHabit.id);
+
+      setHabits(habits.map(habit => 
+        habit.id === updatedHabit.id ? updatedHabit : habit
+      ));
+      toast.success("Habit updated successfully");
+    } catch (error) {
+      console.error('Error updating habit:', error);
+      toast.error('Failed to update habit');
+    } finally {
+      setShowEditDialog(false);
+      setHabitToEdit(null);
+    }
   };
   
   const filteredHabits = habits.filter(habit => {
@@ -183,55 +155,13 @@ export function HabitsList() {
     return true;
   });
   
-  const markHabitForDate = (habitId, date) => {
-    setHabits(habits.map(habit => {
-      if (habit.id === habitId) {
-        const days = habit.days || [];
-        
-        const dayIndex = days.findIndex(day => day.date === date);
-        
-        let newDays;
-        let newStreak = habit.streak;
-        let isCompleting = true;
-        
-        if (dayIndex >= 0) {
-          isCompleting = !days[dayIndex].completed;
-          
-          newDays = days.map((day, i) => 
-            i === dayIndex ? { ...day, completed: isCompleting } : day
-          );
-        } else {
-          newDays = [...days, { date, completed: true }];
-          isCompleting = true;
-        }
-        
-        const today = new Date().toISOString().split('T')[0];
-        
-        if (date === today) {
-          if (isCompleting) {
-            newStreak = habit.streak + 1;
-            toast.success(`"${habit.title}" marked as completed`);
-          } else {
-            newStreak = Math.max(0, habit.streak - 1);
-            toast.info(`"${habit.title}" marked as not completed`);
-          }
-        } else {
-          if (isCompleting) {
-            toast.success(`"${habit.title}" marked as completed for ${new Date(date).toLocaleDateString()}`);
-          } else {
-            toast.info(`"${habit.title}" marked as not completed for ${new Date(date).toLocaleDateString()}`);
-          }
-        }
-        
-        return { 
-          ...habit, 
-          days: newDays,
-          streak: newStreak
-        };
-      }
-      return habit;
-    }));
-  };
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-48">
+        <p className="text-muted-foreground">Loading habits...</p>
+      </div>
+    );
+  }
   
   return (
     <div className="space-y-6 animate-fade-in">
@@ -252,13 +182,8 @@ export function HabitsList() {
             <HabitCard
               key={habit.id}
               habit={habit}
-              onToggleActive={toggleActive}
-              onEdit={handleEditClick}
-              onDelete={handleDeleteClick}
+              onToggleCompletion={markHabitForDate}
               onTogglePin={togglePinned}
-              onMarkCompleted={markHabitForDate}
-              getDomainIcon={getDomainIcon}
-              getDomainColorClass={getDomainColorClass}
             />
           ))}
         </div>
@@ -270,7 +195,7 @@ export function HabitsList() {
         habitToDelete={habitToDelete}
         onConfirmDelete={confirmDelete}
       />
-
+      
       <EditHabitDialog
         open={showEditDialog}
         onOpenChange={setShowEditDialog}

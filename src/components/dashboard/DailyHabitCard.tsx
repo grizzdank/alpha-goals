@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CalendarDays, Plus } from "lucide-react";
@@ -6,13 +5,10 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { EmptyHabitCard } from "./EmptyHabitCard";
 import { HabitProgress } from "./HabitProgress";
-import { 
-  Habit, 
-  HabitDay, 
-  generateSampleDays, 
-  getDomainColors,
-  toggleHabitForDate
-} from "@/utils/habitUtils";
+import { getDomainColors } from "@/utils/habitUtils";
+import { habitService, type HabitWithCompletions } from "@/services/habitService";
+import { useAuth } from "@/hooks/use-auth";
+import { toast } from "sonner";
 
 interface DailyHabitCardProps {
   className?: string;
@@ -20,57 +16,66 @@ interface DailyHabitCardProps {
 }
 
 export function DailyHabitCard({ className = "", style }: DailyHabitCardProps) {
-  // State for habits and active habit
-  const [habits, setHabits] = useState<Habit[]>([]);
-  const [activeHabit, setActiveHabit] = useState<Habit | null>(null);
-  const [habitDays, setHabitDays] = useState<HabitDay[]>([]);
+  const { user } = useAuth();
+  const [habits, setHabits] = useState<HabitWithCompletions[]>([]);
+  const [activeHabit, setActiveHabit] = useState<HabitWithCompletions | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   
-  // Load habits from localStorage
+  // Load habits from Supabase
   useEffect(() => {
-    const storedHabits = localStorage.getItem('habits');
-    if (storedHabits) {
-      const parsedHabits = JSON.parse(storedHabits);
-      setHabits(parsedHabits);
+    const loadHabits = async () => {
+      if (!user?.id) return;
       
-      // Find the pinned habit
-      const pinnedHabit = parsedHabits.find((h: Habit) => h.isPinned && h.active);
-      
-      // If no habit is pinned, use the first active habit
-      const defaultHabit = pinnedHabit || parsedHabits.find((h: Habit) => h.active);
-      
-      if (defaultHabit) {
-        setActiveHabit(defaultHabit);
+      try {
+        const activeHabits = await habitService.getActiveHabits(user.id);
+        setHabits(activeHabits);
         
-        // Generate sample days data if not present
-        if (!defaultHabit.days) {
-          const sampleDays = generateSampleDays(defaultHabit.streak);
-          setHabitDays(sampleDays);
-        } else {
-          setHabitDays(defaultHabit.days);
+        // Find the pinned habit
+        const pinnedHabit = activeHabits.find(h => h.is_pinned && h.active);
+        
+        // If no habit is pinned, use the first active habit
+        const defaultHabit = pinnedHabit || activeHabits.find(h => h.active);
+        
+        if (defaultHabit) {
+          setActiveHabit(defaultHabit);
         }
+      } catch (error) {
+        console.error('Error loading habits:', error);
+        toast.error('Failed to load habits');
+      } finally {
+        setIsLoading(false);
       }
-    }
-  }, []);
+    };
+
+    loadHabits();
+  }, [user?.id]);
   
   // Handle toggle day completion
-  const handleToggleDay = (date: string) => {
+  const handleToggleDay = async (date: string) => {
     if (!activeHabit) return;
     
-    toggleHabitForDate(activeHabit, habitDays, date, (updatedHabit, updatedDays) => {
-      // Update state
-      setHabitDays(updatedDays);
-      setActiveHabit(updatedHabit);
+    try {
+      await habitService.toggleHabitCompletion(activeHabit.id, date);
+      const updatedHabit = await habitService.getHabitById(activeHabit.id);
       
-      // Update the habit in the habits array
-      const updatedHabits = habits.map(h => 
-        h.id === activeHabit.id ? updatedHabit : h
-      );
-      
-      setHabits(updatedHabits);
-      
-      // Save to localStorage
-      localStorage.setItem('habits', JSON.stringify(updatedHabits));
-    });
+      if (updatedHabit) {
+        setActiveHabit(updatedHabit);
+        setHabits(habits.map(h => h.id === activeHabit.id ? updatedHabit : h));
+        
+        const isCompleted = updatedHabit.habit_completions.some(
+          completion => completion.completed_date === date
+        );
+        
+        if (isCompleted) {
+          toast.success(`"${updatedHabit.title}" marked as completed`);
+        } else {
+          toast.info(`"${updatedHabit.title}" marked as not completed`);
+        }
+      }
+    } catch (error) {
+      console.error('Error toggling habit completion:', error);
+      toast.error('Failed to update habit completion');
+    }
   };
   
   // Get domain from habit or default to "mind"
@@ -78,6 +83,26 @@ export function DailyHabitCard({ className = "", style }: DailyHabitCardProps) {
   
   // Get domain colors
   const colors = getDomainColors(domain);
+  
+  if (isLoading) {
+    return (
+      <Card className={`overflow-hidden hover-lift ${className}`} style={style}>
+        <CardHeader className={`bg-primary/10 p-4 md:p-6`}>
+          <div className="flex justify-between items-center">
+            <CardTitle className="text-lg md:text-xl">Daily Habit</CardTitle>
+            <div className="h-9 w-9 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
+              <CalendarDays className="h-5 w-5" />
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent className="p-4 md:p-6">
+          <div className="flex items-center justify-center h-32">
+            <p className="text-muted-foreground">Loading habits...</p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
   
   // If no active habit is found
   if (!activeHabit) {
@@ -114,7 +139,9 @@ export function DailyHabitCard({ className = "", style }: DailyHabitCardProps) {
           <div>
             <div className="flex items-center gap-2">
               <h3 className="font-semibold text-lg">{activeHabit.title}</h3>
-              <span className="text-xs text-muted-foreground">(Pinned)</span>
+              {activeHabit.is_pinned && (
+                <span className="text-xs text-muted-foreground">(Pinned)</span>
+              )}
             </div>
             <p className="text-muted-foreground text-sm mt-1">{activeHabit.description}</p>
           </div>
@@ -125,7 +152,7 @@ export function DailyHabitCard({ className = "", style }: DailyHabitCardProps) {
         
         <HabitProgress 
           activeHabit={activeHabit}
-          habitDays={habitDays}
+          habitCompletions={activeHabit.habit_completions}
           handleToggleDay={handleToggleDay}
           colorClass={colors.completed}
         />

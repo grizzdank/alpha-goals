@@ -1,6 +1,10 @@
-
+import { AuthError, User } from '@supabase/supabase-js';
+import { PostgrestError } from '@supabase/postgrest-js';
 import { supabase } from '@/integrations/supabase/client';
+import type { Database } from '@/integrations/supabase/types';
 import { toast } from '@/hooks/use-toast';
+
+type Profile = Database['public']['Tables']['profiles']['Row'];
 
 export const signUp = async (email: string, password: string, userData?: any) => {
   try {
@@ -89,4 +93,45 @@ export const fetchProfile = async (userId: string) => {
     console.error('Error fetching profile:', error);
     return null;
   }
+};
+
+export const createProfile = async (user: User, userData?: Partial<Profile>): Promise<{ error: PostgrestError | null }> => {
+  const { error } = await supabase
+    .from('profiles')
+    .insert([
+      {
+        id: user.id,
+        email: user.email,
+        ...userData
+      }
+    ]);
+  return { error };
+};
+
+export const getProfile = async (userId: string): Promise<{ data: Profile | null; error: PostgrestError | null }> => {
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', userId)
+    .single();
+
+  return { data, error };
+};
+
+export const updateProfile = async (userId: string, updates: Partial<Profile>): Promise<{ error: PostgrestError | null }> => {
+  const { error } = await supabase
+    .from('profiles')
+    .update(updates)
+    .eq('id', userId);
+
+  return { error };
+};
+
+export const deleteProfile = async (userId: string): Promise<{ error: PostgrestError | null }> => {
+  const { error } = await supabase
+    .from('profiles')
+    .delete()
+    .eq('id', userId);
+
+  return { error };
 };

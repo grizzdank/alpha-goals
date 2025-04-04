@@ -1,18 +1,19 @@
-
 import React from "react";
 import { CheckCircle, Circle } from "lucide-react";
-import { HabitDay } from "@/utils/habitUtils";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import type { Database } from "@/integrations/supabase/types";
+
+type HabitCompletion = Database['public']['Tables']['habit_completions']['Row'];
 
 interface HabitCalendarWeekProps {
-  habitDays: HabitDay[];
+  habitCompletions: HabitCompletion[];
   colorClass: string;
   onToggleDay?: (date: string) => void;
   readOnly?: boolean;
 }
 
 export function HabitCalendarWeek({ 
-  habitDays, 
+  habitCompletions, 
   colorClass, 
   onToggleDay,
   readOnly = false 
@@ -25,11 +26,11 @@ export function HabitCalendarWeek({
     const d = new Date();
     d.setDate(d.getDate() - i);
     const dateString = d.toISOString().split('T')[0];
-    const day = habitDays.find(day => day.date === dateString);
+    const completed = habitCompletions.some(completion => completion.completed_date === dateString);
     return {
       date: dateString,
       dayName: d.toLocaleDateString('en-US', { weekday: 'short' }),
-      completed: day ? day.completed : false,
+      completed,
       isToday: dateString === today
     };
   }).reverse();

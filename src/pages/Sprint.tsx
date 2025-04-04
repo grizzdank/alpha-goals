@@ -1,10 +1,9 @@
-
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
 import { Archive, BarChart3 } from "lucide-react";
-import { CurrentSprint } from "@/components/mission/CurrentSprint";
+import { CurrentSprintView } from "@/components/sprint/CurrentSprintView";
 import { SprintEdit } from "@/components/sprint/SprintEdit";
 import { SprintArchive } from "@/components/sprint/SprintArchive";
 import { AlphaScoreRecorder } from "@/components/sprint/AlphaScoreRecorder";
@@ -99,7 +98,7 @@ const Sprint = () => {
                 </div>
               ) : (
                 <div>
-                  <CurrentSprint 
+                  <CurrentSprintView 
                     onEdit={toggleEdit}
                     onUpdateAlphaScore={handleUpdateAlphaScore}
                   />

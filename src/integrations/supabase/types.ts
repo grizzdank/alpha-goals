@@ -9,60 +9,465 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      profiles: {
+      alpha_score_categories: {
         Row: {
-          avatar_url: string | null
-          created_at: string
-          full_name: string | null
           id: string
-          updated_at: string
-          username: string | null
+          alpha_score_id: string
+          category: string
+          score: number
+          metrics: Json
+          created_at: string
         }
         Insert: {
-          avatar_url?: string | null
+          id?: string
+          alpha_score_id: string
+          category: string
+          score: number
+          metrics: Json
           created_at?: string
-          full_name?: string | null
-          id: string
-          updated_at?: string
-          username?: string | null
         }
         Update: {
-          avatar_url?: string | null
-          created_at?: string
-          full_name?: string | null
           id?: string
-          updated_at?: string
-          username?: string | null
+          alpha_score_id?: string
+          category?: string
+          score?: number
+          metrics?: Json
+          created_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "alpha_score_categories_alpha_score_id_fkey"
+            columns: ["alpha_score_id"]
+            isOneToOne: false
+            referencedRelation: "alpha_scores"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      alpha_scores: {
+        Row: {
+          id: string
+          user_id: string
+          total_score: number
+          recorded_at: string
+          sprint_id: string | null
+          quarter: number
+          year: number
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          total_score: number
+          recorded_at?: string
+          sprint_id?: string | null
+          quarter: number
+          year: number
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          total_score?: number
+          recorded_at?: string
+          sprint_id?: string | null
+          quarter?: number
+          year?: number
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "alpha_scores_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "alpha_scores_sprint_id_fkey"
+            columns: ["sprint_id"]
+            isOneToOne: false
+            referencedRelation: "sprints"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      annual_challenge_prep_steps: {
+        Row: {
+          id: string
+          challenge_id: string
+          step: string
+          completed: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          challenge_id: string
+          step: string
+          completed?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          challenge_id?: string
+          step?: string
+          completed?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "annual_challenge_prep_steps_challenge_id_fkey"
+            columns: ["challenge_id"]
+            isOneToOne: false
+            referencedRelation: "annual_challenges"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      annual_challenges: {
+        Row: {
+          id: string
+          user_id: string
+          title: string
+          description: string | null
+          vision: string
+          purpose: string
+          start_date: string
+          end_date: string
+          status: Database["public"]["Enums"]["challenge_status"]
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          title: string
+          description?: string | null
+          vision: string
+          purpose: string
+          start_date: string
+          end_date: string
+          status?: Database["public"]["Enums"]["challenge_status"]
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          title?: string
+          description?: string | null
+          vision?: string
+          purpose?: string
+          start_date?: string
+          end_date?: string
+          status?: Database["public"]["Enums"]["challenge_status"]
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "annual_challenges_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      challenge_categories: {
+        Row: {
+          id: string
+          name: string
+          description: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          description?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          description?: string | null
+          created_at?: string
+        }
+      }
+      habit_completions: {
+        Row: {
+          id: string
+          habit_id: string
+          completed_date: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          habit_id: string
+          completed_date: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          habit_id?: string
+          completed_date?: string
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "habit_completions_habit_id_fkey"
+            columns: ["habit_id"]
+            isOneToOne: false
+            referencedRelation: "habits"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      habits: {
+        Row: {
+          id: string
+          user_id: string
+          title: string
+          description: string | null
+          domain: Database["public"]["Enums"]["habit_domain"]
+          active: boolean
+          is_pinned: boolean
+          streak: number
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          title: string
+          description?: string | null
+          domain: Database["public"]["Enums"]["habit_domain"]
+          active?: boolean
+          is_pinned?: boolean
+          streak?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          title?: string
+          description?: string | null
+          domain?: Database["public"]["Enums"]["habit_domain"]
+          active?: boolean
+          is_pinned?: boolean
+          streak?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "habits_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      ikigai_components: {
+        Row: {
+          id: string
+          user_id: string
+          love: string
+          good: string
+          paid: string
+          needs: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          love: string
+          good: string
+          paid: string
+          needs: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          love?: string
+          good?: string
+          paid?: string
+          needs?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ikigai_components_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      mission_statements: {
+        Row: {
+          id: string
+          user_id: string
+          statement: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          statement: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          statement?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mission_statements_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      monthly_challenges: {
+        Row: {
+          id: string
+          user_id: string
+          category_id: string
+          title: string
+          description: string | null
+          success_criteria: string | null
+          start_date: string
+          end_date: string
+          status: Database["public"]["Enums"]["challenge_status"]
+          progress: number
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          category_id: string
+          title: string
+          description?: string | null
+          success_criteria?: string | null
+          start_date: string
+          end_date: string
+          status?: Database["public"]["Enums"]["challenge_status"]
+          progress?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          category_id?: string
+          title?: string
+          description?: string | null
+          success_criteria?: string | null
+          start_date?: string
+          end_date?: string
+          status?: Database["public"]["Enums"]["challenge_status"]
+          progress?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "monthly_challenges_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "challenge_categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "monthly_challenges_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      profiles: {
+        Row: {
+          id: string
+          updated_at: string | null
+          username: string | null
+          full_name: string | null
+          avatar_url: string | null
+          website: string | null
+        }
+        Insert: {
+          id: string
+          updated_at?: string | null
+          username?: string | null
+          full_name?: string | null
+          avatar_url?: string | null
+          website?: string | null
+        }
+        Update: {
+          id?: string
+          updated_at?: string | null
+          username?: string | null
+          full_name?: string | null
+          avatar_url?: string | null
+          website?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profiles_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
       }
       sprint_objectives: {
         Row: {
-          created_at: string
-          description: string | null
           id: string
-          progress: number
           sprint_id: string
           title: string
-          updated_at: string
+          description: string | null
+          progress: number
+          created_at: string
+          updated_at: string | null
         }
         Insert: {
-          created_at?: string
-          description?: string | null
           id?: string
-          progress?: number
           sprint_id: string
           title: string
-          updated_at?: string
+          description?: string | null
+          progress?: number
+          created_at?: string
+          updated_at?: string | null
         }
         Update: {
-          created_at?: string
-          description?: string | null
           id?: string
-          progress?: number
           sprint_id?: string
           title?: string
-          updated_at?: string
+          description?: string | null
+          progress?: number
+          created_at?: string
+          updated_at?: string | null
         }
         Relationships: [
           {
@@ -71,57 +476,332 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "sprints"
             referencedColumns: ["id"]
-          },
+          }
         ]
       }
       sprints: {
         Row: {
-          created_at: string
-          description: string | null
-          end_date: string
           id: string
-          name: string
-          progress: number
-          start_date: string
-          updated_at: string
+          created_at: string
           user_id: string
+          name: string
+          description: string | null
+          start_date: string
+          end_date: string
+          updated_at: string | null
         }
         Insert: {
-          created_at?: string
-          description?: string | null
-          end_date: string
           id?: string
-          name: string
-          progress?: number
-          start_date: string
-          updated_at?: string
+          created_at?: string
           user_id: string
+          name: string
+          description?: string | null
+          start_date: string
+          end_date: string
+          updated_at?: string | null
         }
         Update: {
-          created_at?: string
-          description?: string | null
-          end_date?: string
           id?: string
-          name?: string
-          progress?: number
-          start_date?: string
-          updated_at?: string
+          created_at?: string
           user_id?: string
+          name?: string
+          description?: string | null
+          start_date?: string
+          end_date?: string
+          updated_at?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "sprints_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      vision_goals: {
+        Row: {
+          id: string
+          user_id: string
+          timeframe: string
+          statement: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          timeframe: string
+          statement: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          timeframe?: string
+          statement?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vision_goals_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      vision_milestones: {
+        Row: {
+          id: string
+          vision_goal_id: string
+          milestone: string
+          completed: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          vision_goal_id: string
+          milestone: string
+          completed?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          vision_goal_id?: string
+          milestone?: string
+          completed?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vision_milestones_vision_goal_id_fkey"
+            columns: ["vision_goal_id"]
+            isOneToOne: false
+            referencedRelation: "vision_goals"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      weekly_habit_progress: {
+        Row: {
+          id: string
+          review_id: string
+          habit_id: string
+          completed: number
+          target: number
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          review_id: string
+          habit_id: string
+          completed: number
+          target: number
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          review_id?: string
+          habit_id?: string
+          completed?: number
+          target?: number
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "weekly_habit_progress_habit_id_fkey"
+            columns: ["habit_id"]
+            isOneToOne: false
+            referencedRelation: "habits"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "weekly_habit_progress_review_id_fkey"
+            columns: ["review_id"]
+            isOneToOne: false
+            referencedRelation: "weekly_reviews"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      weekly_reviews: {
+        Row: {
+          id: string
+          user_id: string
+          week_start_date: string
+          wins: string | null
+          challenges: string | null
+          lessons: string | null
+          next_week_focus: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          week_start_date: string
+          wins?: string | null
+          challenges?: string | null
+          lessons?: string | null
+          next_week_focus?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          week_start_date?: string
+          wins?: string | null
+          challenges?: string | null
+          lessons?: string | null
+          next_week_focus?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "weekly_reviews_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      financial_data: {
+        Row: {
+          id: string
+          user_id: string
+          monthly_freedom_number: number
+          annual_freedom_number: number
+          current_savings: number
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          monthly_freedom_number: number
+          annual_freedom_number: number
+          current_savings: number
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          monthly_freedom_number?: number
+          annual_freedom_number?: number
+          current_savings?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "financial_data_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      income_sources: {
+        Row: {
+          id: string
+          user_id: string
+          name: string
+          amount: number
+          is_passive: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          name: string
+          amount: number
+          is_passive: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          name?: string
+          amount?: number
+          is_passive?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "income_sources_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      monthly_expenses: {
+        Row: {
+          id: string
+          user_id: string
+          month: string
+          amount: number
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          month: string
+          amount: number
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          month?: string
+          amount?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "monthly_expenses_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
       }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      calculate_habit_streak: {
+        Args: {
+          habit_id: string
+        }
+        Returns: number
+      }
     }
     Enums: {
-      [_ in never]: never
-    }
-    CompositeTypes: {
-      [_ in never]: never
+      challenge_status: "upcoming" | "in_progress" | "completed" | "failed"
+      habit_domain: "mind" | "body" | "purpose" | "relationships"
     }
   }
 }
@@ -206,19 +886,4 @@ export type Enums<
   ? Database[PublicEnumNameOrOptions["schema"]]["Enums"][EnumName]
   : PublicEnumNameOrOptions extends keyof PublicSchema["Enums"]
     ? PublicSchema["Enums"][PublicEnumNameOrOptions]
-    : never
-
-export type CompositeTypes<
-  PublicCompositeTypeNameOrOptions extends
-    | keyof PublicSchema["CompositeTypes"]
-    | { schema: keyof Database },
-  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
-    schema: keyof Database
-  }
-    ? keyof Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
-    : never = never,
-> = PublicCompositeTypeNameOrOptions extends { schema: keyof Database }
-  ? Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
-  : PublicCompositeTypeNameOrOptions extends keyof PublicSchema["CompositeTypes"]
-    ? PublicSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
     : never

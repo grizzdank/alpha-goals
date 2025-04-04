@@ -1,14 +1,16 @@
+import { Session, User, AuthError } from '@supabase/supabase-js';
+import type { Database } from '@/integrations/supabase/types';
 
-import { Session, User } from '@supabase/supabase-js';
+type Profile = Database['public']['Tables']['profiles']['Row'];
 
 export type AuthContextType = {
   session: Session | null;
   user: User | null;
-  profile: any | null;
+  profile: Profile | null;
   loading: boolean;
-  signUp: (email: string, password: string, userData?: any) => Promise<{ error: any | null }>;
-  signIn: (email: string, password: string) => Promise<{ error: any | null }>;
-  signInWithGoogle: () => Promise<{ error: any | null }>;
+  signUp: (email: string, password: string, userData?: Partial<Profile>) => Promise<{ error: AuthError | null }>;
+  signIn: (email: string, password: string) => Promise<{ error: AuthError | null }>;
+  signInWithGoogle: () => Promise<{ error: AuthError | null }>;
   signOut: () => Promise<void>;
   refreshProfile: () => Promise<void>;
 };

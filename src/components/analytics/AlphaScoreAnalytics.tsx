@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ProgressCircle } from "@/components/ui/ProgressCircle";
@@ -18,71 +18,9 @@ import { ChartContainer } from "@/components/ui/chart";
 import { TrendingUp, TrendingDown, Heart, Brain, Target, Users, BarChart3 } from "lucide-react";
 import { StatCard } from "./StatCard";
 import { Button } from "@/components/ui/button";
-
-const alphaScoreHistory = [
-  { quarter: 'Q1 2023', score: 65 },
-  { quarter: 'Q2 2023', score: 68 },
-  { quarter: 'Q3 2023', score: 72 },
-  { quarter: 'Q4 2023', score: 70 },
-  { quarter: 'Q1 2024', score: 74 },
-  { quarter: 'Q2 2024', score: 76 },
-];
-
-const categoryScores = [
-  { 
-    category: "relationships", 
-    score: 82, 
-    label: "Relationships", 
-    icon: Users, 
-    change: 5, 
-    trend: "up",
-    metrics: [
-      { name: "Interactions with kids", value: 25, max: 30 },
-      { name: "Interactions with partner", value: 23, max: 30 },
-      { name: "Conversations with friends", value: 18, max: 30 },
-      { name: "Conversations with family", value: 16, max: 30 }
-    ]
-  },
-  { 
-    category: "purpose", 
-    score: 75, 
-    label: "Purpose", 
-    icon: Target, 
-    change: 3, 
-    trend: "up",
-    metrics: [
-      { name: "Income streams", value: 3, max: 10 },
-      { name: "Months of savings", value: 8, max: 30 },
-      { name: "Passive income %", value: 30, max: 100 }
-    ]
-  },
-  { 
-    category: "body", 
-    score: 68, 
-    label: "Body", 
-    icon: Heart, 
-    change: -2, 
-    trend: "down",
-    metrics: [
-      { name: "Diet adherence (days/week)", value: 4, max: 7 },
-      { name: "Exercise (days/week)", value: 3, max: 7 },
-      { name: "Good sleep (nights/week)", value: 5, max: 7 }
-    ]
-  },
-  { 
-    category: "mind", 
-    score: 79, 
-    label: "Mind", 
-    icon: Brain, 
-    change: 4, 
-    trend: "up",
-    metrics: [
-      { name: "Meditation (days/week)", value: 5, max: 7 },
-      { name: "Visualization (days/week)", value: 4, max: 7 },
-      { name: "Journaling (days/week)", value: 6, max: 7 }
-    ]
-  },
-];
+import { alphaScoreService } from "@/services/alphaScoreService";
+import { useAuth } from "@/hooks/use-auth";
+import { toast } from "sonner";
 
 const chartConfig = {
   alphaScore: {
@@ -97,10 +35,88 @@ const chartConfig = {
 
 export const AlphaScoreAnalytics = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const [isLoading, setIsLoading] = useState(true);
+  const [alphaScoreHistory, setAlphaScoreHistory] = useState<any[]>([]);
+  const [latestScore, setLatestScore] = useState<any>(null);
+  const [categoryScores, setCategoryScores] = useState<any[]>([]);
+  const [scoreChanges, setScoreChanges] = useState<any[]>([]);
+
+  useEffect(() => {
+    const loadData = async () => {
+      if (!user?.id) return;
+
+      try {
+        const [history, latest, changes] = await Promise.all([
+          alphaScoreService.getQuarterlyHistory(user.id),
+          alphaScoreService.getLatestScore(user.id),
+          alphaScoreService.getScoreChanges(user.id)
+        ]);
+
+        // Format history data
+        const formattedHistory = history.map(score => ({
+          quarter: `Q${score.quarter} ${score.year}`,
+          score: score.total_score
+        }));
+        setAlphaScoreHistory(formattedHistory);
+
+        // Set latest score
+        setLatestScore(latest);
+
+        // Format category scores with changes
+        if (latest?.alpha_score_categories) {
+          const categories = [
+            { id: "relationships", label: "Relationships", icon: Users, color: "bg-purple-500" },
+            { id: "purpose", label: "Purpose", icon: Target, color: "bg-blue-500" },
+            { id: "body", label: "Body", icon: Heart, color: "bg-green-500" },
+            { id: "mind", label: "Mind", icon: Brain, color: "bg-orange-500" }
+          ];
+
+          const formattedCategories = latest.alpha_score_categories.map((cat: any) => {
+            const change = changes?.find(c => c.category === cat.category);
+            const categoryInfo = categories.find(c => c.id === cat.category);
+            return {
+              ...cat,
+              label: categoryInfo?.label || cat.category,
+              icon: categoryInfo?.icon,
+              color: categoryInfo?.color,
+              change: change ? change.score_change : 0,
+              trend: change && change.score_change > 0 ? "up" : "down"
+            };
+          });
+
+          setCategoryScores(formattedCategories);
+        }
+
+        setScoreChanges(changes || []);
+      } catch (error) {
+        console.error('Error loading alpha score data:', error);
+        toast.error('Failed to load alpha score data');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadData();
+  }, [user?.id]);
 
   const handleUpdateAlphaScore = () => {
     navigate('/sprints', { state: { showAlphaScoreDialog: true } });
   };
+
+  if (isLoading) {
+    return (
+      <div className="space-y-6 animate-pulse">
+        <div className="h-8 w-48 bg-muted rounded"></div>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="h-32 bg-muted rounded"></div>
+          ))}
+        </div>
+        <div className="h-96 bg-muted rounded"></div>
+      </div>
+    );
+  }
   
   return (
     <div className="space-y-6">
@@ -116,34 +132,16 @@ export const AlphaScoreAnalytics = () => {
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <StatCard 
-          title="Relationships"
-          value="82%"
-          description="+5% from last quarter"
-          icon={<Users className="h-4 w-4" />}
-          color="bg-purple-500"
-        />
-        <StatCard 
-          title="Purpose"
-          value="75%"
-          description="+3% from last quarter"
-          icon={<Target className="h-4 w-4" />}
-          color="bg-blue-500"
-        />
-        <StatCard 
-          title="Body"
-          value="68%"
-          description="-2% from last quarter"
-          icon={<Heart className="h-4 w-4" />}
-          color="bg-green-500"
-        />
-        <StatCard 
-          title="Mind"
-          value="79%"
-          description="+4% from last quarter"
-          icon={<Brain className="h-4 w-4" />}
-          color="bg-orange-500"
-        />
+        {categoryScores.map((category) => (
+          <StatCard 
+            key={category.category}
+            title={category.label}
+            value={`${category.score}%`}
+            description={`${category.change > 0 ? '+' : ''}${category.change}% from last quarter`}
+            icon={category.icon && <category.icon className="h-4 w-4" />}
+            color={category.color}
+          />
+        ))}
       </div>
       
       {/* Current Alpha Score Card */}
@@ -155,20 +153,29 @@ export const AlphaScoreAnalytics = () => {
         <CardContent className="flex flex-col items-center">
           <div className="mb-6">
             <ProgressCircle 
-              percentage={76} 
-              value={76}
+              percentage={latestScore?.total_score || 0} 
+              value={latestScore?.total_score || 0}
               size="lg"
               label="Overall Alpha Score"
             />
           </div>
-          <div className="flex items-center text-sm text-primary">
-            <TrendingUp className="h-4 w-4 mr-1" />
-            <span>+4.2% from last quarter</span>
-          </div>
+          {scoreChanges.length > 0 && (
+            <div className="flex items-center text-sm text-primary">
+              {scoreChanges[0].score_change > 0 ? (
+                <TrendingUp className="h-4 w-4 mr-1" />
+              ) : (
+                <TrendingDown className="h-4 w-4 mr-1" />
+              )}
+              <span>
+                {scoreChanges[0].score_change > 0 ? '+' : ''}
+                {scoreChanges[0].score_change}% from last quarter
+              </span>
+            </div>
+          )}
         </CardContent>
       </Card>
 
-      {/* Alpha Score History - Updated to show quarters */}
+      {/* Alpha Score History */}
       <Card>
         <CardHeader>
           <CardTitle>Alpha Score History</CardTitle>
@@ -205,71 +212,6 @@ export const AlphaScoreAnalytics = () => {
           </div>
         </CardContent>
       </Card>
-
-      {/* Category Breakdown */}
-      {categoryScores.map((category) => (
-        <Card key={category.category} className="mb-6">
-          <CardHeader>
-            <div className="flex items-center gap-2">
-              <div className={`p-2 rounded-lg bg-${category.category}/10 text-${category.category}`}>
-                <category.icon className="h-5 w-5" />
-              </div>
-              <div>
-                <CardTitle className="text-xl">{category.label}</CardTitle>
-                <div className="flex items-center">
-                  <span className="font-bold mr-2">{category.score}%</span>
-                  <div className={`flex items-center ${category.trend === 'up' ? 'text-green-500' : 'text-red-500'}`}>
-                    {category.trend === 'up' ? (
-                      <TrendingUp className="h-4 w-4 mr-1" />
-                    ) : (
-                      <TrendingDown className="h-4 w-4 mr-1" />
-                    )}
-                    <span>{category.change}%</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="flex justify-center items-center">
-                <ProgressCircle 
-                  percentage={category.score}
-                  size="md"
-                  value={category.score}
-                  color={category.category}
-                  lightColor={`${category.category}-light`}
-                />
-              </div>
-              <div className="md:col-span-2">
-                <div className="h-[200px] w-full">
-                  <ChartContainer config={chartConfig}>
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart
-                        data={category.metrics}
-                        layout="vertical"
-                        margin={{
-                          top: 5,
-                          right: 30,
-                          left: 100,
-                          bottom: 5,
-                        }}
-                      >
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis type="number" domain={[0, 'dataMax']} />
-                        <YAxis dataKey="name" type="category" scale="band" />
-                        <Tooltip />
-                        <Bar dataKey="value" fill="#8884d8" name="Current" />
-                        <Bar dataKey="max" fill="#82ca9d" name="Maximum" />
-                      </BarChart>
-                    </ResponsiveContainer>
-                  </ChartContainer>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      ))}
     </div>
   );
 };

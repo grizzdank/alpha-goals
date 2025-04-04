@@ -1,18 +1,20 @@
-
 import React from "react";
 import { HabitCalendarWeek } from "./HabitCalendarWeek";
-import { Habit, HabitDay } from "@/utils/habitUtils";
+import type { HabitWithCompletions } from "@/services/habitService";
+import type { Database } from "@/integrations/supabase/types";
+
+type HabitCompletion = Database['public']['Tables']['habit_completions']['Row'];
 
 interface HabitProgressProps {
-  activeHabit: Habit;
-  habitDays: HabitDay[];
+  activeHabit: HabitWithCompletions;
+  habitCompletions: HabitCompletion[];
   handleToggleDay: (date: string) => void;
   colorClass: string;
 }
 
 export function HabitProgress({ 
   activeHabit, 
-  habitDays, 
+  habitCompletions, 
   handleToggleDay, 
   colorClass 
 }: HabitProgressProps) {
@@ -23,7 +25,7 @@ export function HabitProgress({
       </div>
       
       <HabitCalendarWeek 
-        habitDays={habitDays} 
+        habitCompletions={habitCompletions} 
         colorClass={colorClass} 
         onToggleDay={handleToggleDay}
       />

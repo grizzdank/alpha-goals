@@ -1,8 +1,11 @@
-
 import React, { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { ArrowRight, Target } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { missionService } from '@/services/missionService';
+import { sprintService, type SprintWithObjectives } from '@/services/sprintService';
+import { useAuth } from '@/hooks/use-auth';
+import { toast } from 'sonner';
 
 interface MissionCardProps {
   className?: string;
@@ -10,44 +13,66 @@ interface MissionCardProps {
 }
 
 export function MissionCard({ className, style }: MissionCardProps) {
-  // Default mission statement
-  const defaultStatement = "Empowering individuals to align their personal purpose with action through innovative tools and methodologies.";
+  const { user } = useAuth();
+  const [missionStatement, setMissionStatement] = useState<string | null>(null);
+  const [oneYearVision, setOneYearVision] = useState<string | null>(null);
+  const [currentSprint, setCurrentSprint] = useState<SprintWithObjectives | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   
-  // State for the mission statement and vision goals
-  const [missionStatement, setMissionStatement] = useState(defaultStatement);
-  const [oneYearVision, setOneYearVision] = useState("");
-  
-  // Effect to load the mission data from localStorage
   useEffect(() => {
-    const loadMissionData = () => {
+    const loadData = async () => {
+      if (!user?.id) return;
+
       try {
-        // Load mission statement
-        const storedStatement = localStorage.getItem('missionStatement');
-        if (storedStatement) {
-          setMissionStatement(JSON.parse(storedStatement));
+        const [statement, visionGoals, sprint] = await Promise.all([
+          missionService.getMissionStatement(user.id),
+          missionService.getVisionGoals(user.id),
+          sprintService.getCurrentSprint(user.id)
+        ]);
+
+        if (statement) {
+          setMissionStatement(statement.statement);
         }
-        
-        // Load vision goals
-        const storedVisionGoals = localStorage.getItem('visionGoals');
-        if (storedVisionGoals) {
-          const { oneYear } = JSON.parse(storedVisionGoals);
-          setOneYearVision(oneYear.statement);
+
+        const oneYearGoal = visionGoals.find(goal => goal.timeframe === '1 year');
+        if (oneYearGoal) {
+          setOneYearVision(oneYearGoal.statement);
         }
+
+        setCurrentSprint(sprint);
       } catch (error) {
         console.error("Error loading mission data:", error);
+        toast.error("Failed to load mission data");
+      } finally {
+        setIsLoading(false);
       }
     };
     
-    // Load on mount
-    loadMissionData();
-    
-    // Listen for changes
-    window.addEventListener('storage', loadMissionData);
-    
-    return () => {
-      window.removeEventListener('storage', loadMissionData);
-    };
-  }, []);
+    loadData();
+  }, [user?.id]);
+
+  if (isLoading) {
+    return (
+      <div className={cn("glass rounded-2xl p-6", className)} style={style}>
+        <div className="flex justify-between items-start mb-6">
+          <div>
+            <h3 className="text-lg font-semibold text-foreground">Mission & Vision</h3>
+            <p className="text-sm text-muted-foreground">Your purpose alignment</p>
+          </div>
+          <div className="h-10 w-10 rounded-full bg-purpose/10 flex items-center justify-center">
+            <Target className="h-5 w-5 text-purpose" />
+          </div>
+        </div>
+        <div className="flex items-center justify-center h-32">
+          <p className="text-muted-foreground">Loading mission data...</p>
+        </div>
+      </div>
+    );
+  }
+
+  const daysLeft = currentSprint 
+    ? Math.ceil((new Date(currentSprint.end_date).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))
+    : null;
 
   return (
     <div className={cn("glass rounded-2xl p-6 hover-lift", className)} style={style}>
@@ -65,7 +90,7 @@ export function MissionCard({ className, style }: MissionCardProps) {
         <div className="rounded-xl bg-white/40 p-4 border border-white/30 dark:bg-gray-800/40 dark:border-white/10">
           <h4 className="text-sm font-medium mb-2">Ikigai Statement</h4>
           <p className="text-sm text-muted-foreground">
-            "{missionStatement}"
+            {missionStatement || "Define your mission statement on the mission page"}
           </p>
         </div>
         
@@ -80,14 +105,14 @@ export function MissionCard({ className, style }: MissionCardProps) {
           <div className="rounded-xl bg-white/40 p-3 border border-white/30 dark:bg-gray-800/40 dark:border-white/10">
             <h4 className="text-xs font-medium mb-1">Current Sprint</h4>
             <p className="text-xs text-muted-foreground">
-              Q3 - Building digital presence
+              {currentSprint ? currentSprint.name : "No active sprint"}
             </p>
           </div>
           
           <div className="rounded-xl bg-white/40 p-3 border border-white/30 dark:bg-gray-800/40 dark:border-white/10">
             <h4 className="text-xs font-medium mb-1">Days Left</h4>
             <p className="text-xl font-semibold text-primary">
-              18
+              {daysLeft ?? "-"}
             </p>
           </div>
         </div>

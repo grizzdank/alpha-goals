@@ -1,7 +1,5 @@
-
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ChartContainer } from "@/components/ui/chart";
 import { 
   ResponsiveContainer, 
   BarChart, 
@@ -12,10 +10,67 @@ import {
   Tooltip, 
   Legend
 } from "recharts";
-import { habitChartData, chartConfig } from "./HabitData";
-import { CustomBarTooltip } from "./CustomTooltips";
+import { useAuth } from "@/hooks/use-auth";
+import { habitService, type HabitWithCompletions } from "@/services/habitService";
+import { toast } from "sonner";
+
+interface ChartData {
+  name: string;
+  completionRate: number;
+  streak: number;
+}
 
 export const HabitCompletionChart = () => {
+  const { user } = useAuth();
+  const [chartData, setChartData] = useState<ChartData[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const loadHabitData = async () => {
+      if (!user?.id) return;
+
+      try {
+        const habits = await habitService.getActiveHabits(user.id);
+        const data = habits.map(habit => {
+          const totalDays = habit.habit_completions.length;
+          const completedDays = habit.habit_completions.filter(c => c.completed_date).length;
+          const completionRate = totalDays > 0 ? Math.round((completedDays / totalDays) * 100) : 0;
+
+          return {
+            name: habit.title,
+            completionRate,
+            streak: habit.streak
+          };
+        });
+
+        setChartData(data);
+      } catch (error) {
+        console.error('Error loading habit data:', error);
+        toast.error('Failed to load habit performance data');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadHabitData();
+  }, [user?.id]);
+
+  if (isLoading) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Habit Completion Rates</CardTitle>
+          <CardDescription>Loading habit performance data...</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="h-[350px] sm:h-[400px] w-full flex items-center justify-center">
+            <p className="text-muted-foreground">Loading...</p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <Card>
       <CardHeader>
@@ -25,54 +80,26 @@ export const HabitCompletionChart = () => {
       <CardContent>
         <div className="h-[350px] sm:h-[400px] w-full overflow-x-auto pb-6">
           <div className="min-w-[500px] h-full">
-            <ChartContainer config={chartConfig}>
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart
-                  data={habitChartData}
-                  margin={{
-                    top: 20,
-                    right: 20,
-                    left: 5,
-                    bottom: 70,
-                  }}
-                  barSize={30}
-                >
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis 
-                    dataKey="name" 
-                    tick={{ fontSize: 10 }}
-                    angle={-45}
-                    textAnchor="end"
-                    height={70}
-                    interval={0}
-                  />
-                  <YAxis 
-                    tick={{ fontSize: 10 }}
-                    domain={[0, 100]}
-                    label={{ 
-                      value: '%', 
-                      angle: -90, 
-                      position: 'insideLeft',
-                      style: { textAnchor: 'middle', fontSize: 12 }
-                    }}
-                  />
-                  <Tooltip content={<CustomBarTooltip />} />
-                  <Legend wrapperStyle={{ paddingTop: 15, fontSize: 12 }} />
-                  <Bar 
-                    dataKey="completed" 
-                    name="Completed %" 
-                    fill="#4ade80" 
-                    radius={[4, 4, 0, 0]} 
-                  />
-                  <Bar 
-                    dataKey="missed" 
-                    name="Missed %" 
-                    fill="#f87171" 
-                    radius={[4, 4, 0, 0]} 
-                  />
-                </BarChart>
-              </ResponsiveContainer>
-            </ChartContainer>
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart
+                data={chartData}
+                margin={{
+                  top: 20,
+                  right: 30,
+                  left: 20,
+                  bottom: 5,
+                }}
+              >
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name" />
+                <YAxis yAxisId="left" orientation="left" stroke="#8884d8" />
+                <YAxis yAxisId="right" orientation="right" stroke="#82ca9d" />
+                <Tooltip />
+                <Legend />
+                <Bar yAxisId="left" dataKey="completionRate" name="Completion Rate %" fill="#8884d8" />
+                <Bar yAxisId="right" dataKey="streak" name="Current Streak" fill="#82ca9d" />
+              </BarChart>
+            </ResponsiveContainer>
           </div>
         </div>
       </CardContent>

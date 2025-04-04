@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -39,7 +38,7 @@ export function DetailedStreakView({ habit }: DetailedStreakViewProps) {
       new Date(b.date).getTime() - new Date(a.date).getTime()
     );
     
-    for (let day of sortedDays) {
+    for (const day of sortedDays) {
       if (day.completed) {
         streak++;
       } else {
@@ -60,7 +59,7 @@ export function DetailedStreakView({ habit }: DetailedStreakViewProps) {
       new Date(a.date).getTime() - new Date(b.date).getTime()
     );
     
-    for (let day of sortedDays) {
+    for (const day of sortedDays) {
       if (day.completed) {
         currentStreak++;
         longestStreak = Math.max(longestStreak, currentStreak);

@@ -1,12 +1,11 @@
-
 import React from "react";
-import { MissionContainer } from "@/components/mission/MissionContainer";
+import { MissionVisionContainer } from "@/components/mission/MissionVisionContainer";
 import { Layout } from "@/components/layout/Layout";
 
 const Mission = () => {
   return (
     <Layout title="Mission">
-      <MissionContainer />
+      <MissionVisionContainer />
     </Layout>
   );
 };
