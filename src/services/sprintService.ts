@@ -32,9 +32,9 @@ export const sprintService = {
       .gte('end_date', new Date().toISOString())
       .order('start_date', { ascending: true })
       .limit(1)
-      .single();
+      .maybeSingle();
 
-    if (error) {
+    if (error && error.code !== 'PGRST116') {
       console.error('Error fetching current sprint:', error);
       return null;
     }

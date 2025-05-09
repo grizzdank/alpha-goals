@@ -81,9 +81,9 @@ export const fetchProfile = async (userId: string) => {
       .from('profiles')
       .select('*')
       .eq('id', userId)
-      .single();
+      .maybeSingle();
 
-    if (error) {
+    if (error && error.code !== 'PGRST116') {
       console.error('Error fetching profile:', error);
       return null;
     }
@@ -134,4 +134,29 @@ export const deleteProfile = async (userId: string): Promise<{ error: PostgrestE
     .eq('id', userId);
 
   return { error };
+};
+
+export const requestPasswordReset = async (email: string) => {
+  try {
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      // Optional: specify a URL to redirect to after the user clicks the password reset link
+      // redirectTo: `${window.location.origin}/update-password`,
+    });
+
+    if (error) throw error;
+
+    toast({
+      title: 'Check your email',
+      description: 'If an account exists for this email, a password reset link has been sent.',
+    });
+    return { error: null };
+  } catch (error: any) {
+    console.error('Error requesting password reset:', error);
+    toast({
+      title: 'Password Reset Failed',
+      description: error.message || 'Could not send password reset email. Please try again.',
+      variant: 'destructive',
+    });
+    return { error };
+  }
 };

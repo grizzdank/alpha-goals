@@ -1,10 +1,9 @@
-
 import React, { createContext, useEffect, useState } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { AuthContextType } from './types';
-import { signUp, signIn, signInWithGoogle, signOut, fetchProfile } from './authUtils';
+import { signUp, signIn, signInWithGoogle, signOut, fetchProfile, requestPasswordReset } from './authUtils';
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -18,53 +17,73 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
+        console.log('AuthProvider onAuthStateChange event:', event, 'session:', session);
+        const currentEventUser = session?.user ?? null;
         
-        if (session?.user) {
-          await refreshProfile();
+        setSession(session);
+        setUser(currentEventUser);
+
+        if (currentEventUser) {
+          const refreshedProfile = await _refreshProfileInternal(currentEventUser.id);
+          if (event === 'SIGNED_IN') {
+            toast({
+              title: 'Signed in successfully',
+              description: `Welcome${refreshedProfile?.username ? ` ${refreshedProfile.username}` : ''}!`,
+            });
+            setLoading(false);
+            console.log('AuthProvider: SIGNED_IN event processed, setLoading(false) CALLED. User:', currentEventUser?.id);
+          } else if (event === 'USER_UPDATED') {
+            setLoading(false);
+          } else if (event === 'INITIAL_SESSION' && currentEventUser) {
+            setLoading(false);
+            console.log('AuthProvider: INITIAL_SESSION (with user) event processed, setLoading(false) CALLED. User:', currentEventUser?.id);
+          }
         } else {
           setProfile(null);
-        }
-
-        if (event === 'SIGNED_IN') {
-          toast({
-            title: 'Signed in successfully',
-            description: `Welcome${profile?.username ? ` ${profile.username}` : ''}!`,
-          });
-        } else if (event === 'SIGNED_OUT') {
-          toast({
-            title: 'Signed out',
-            description: 'You have been signed out.',
-          });
+          if (event === 'SIGNED_OUT') {
+            toast({
+              title: 'Signed out',
+              description: 'You have been signed out.',
+            });
+            setLoading(false);
+            console.log('AuthProvider: SIGNED_OUT event processed, setLoading(false) CALLED.');
+          } else if (event === 'INITIAL_SESSION' && !currentEventUser) {
+            setLoading(false);
+            console.log('AuthProvider: INITIAL_SESSION (no user) event processed, setLoading(false) CALLED.');
+          }
         }
       }
     );
-
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      
-      if (session?.user) {
-        refreshProfile().finally(() => {
-          setLoading(false);
-        });
-      } else {
-        setLoading(false);
-      }
-    });
 
     return () => {
       subscription.unsubscribe();
     };
   }, []);
 
-  const refreshProfile = async () => {
-    if (!user) return;
-    
-    const data = await fetchProfile(user.id);
+  const _refreshProfileInternal = async (userId: string) => {
+    console.log('AuthProvider: _refreshProfileInternal START for userId:', userId);
+    if (!userId) {
+      console.warn("_refreshProfileInternal called without a userId");
+      setProfile(null);
+      console.log('AuthProvider: _refreshProfileInternal END (no userId) - profile set to null');
+      return null;
+    }
+    const data = await fetchProfile(userId);
     setProfile(data);
+    console.log('AuthProvider: _refreshProfileInternal END for userId:', userId, 'Fetched profile:', data);
+    return data;
   };
+
+  const refreshProfile = async () => {
+    if (user?.id) {
+      await _refreshProfileInternal(user.id);
+    } else {
+      console.warn("refreshProfile called but no user is available in state.");
+      setProfile(null);
+    }
+  };
+
+  console.log('AuthProvider rendering. Context Value - Loading:', loading, 'User:', user?.id);
 
   return (
     <AuthContext.Provider
@@ -78,6 +97,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         signInWithGoogle,
         signOut,
         refreshProfile,
+        requestPasswordReset,
       }}
     >
       {children}

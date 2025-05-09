@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/auth';
@@ -19,9 +18,10 @@ export type LoginFormValues = z.infer<typeof loginSchema>;
 
 interface LoginFormProps {
   onSuccess?: () => void;
+  onForgotPassword?: () => void;
 }
 
-export const LoginForm = ({ onSuccess }: LoginFormProps) => {
+export const LoginForm = ({ onSuccess, onForgotPassword }: LoginFormProps) => {
   const { signIn } = useAuth();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
@@ -90,6 +90,16 @@ export const LoginForm = ({ onSuccess }: LoginFormProps) => {
         <Button type="submit" className="w-full" disabled={isLoading}>
           {isLoading ? "Signing in..." : "Sign In"}
         </Button>
+        {onForgotPassword && (
+          <Button 
+            type="button"
+            variant="link" 
+            onClick={onForgotPassword} 
+            className="w-full mt-2 text-sm text-muted-foreground hover:text-primary"
+          >
+            Forgot Password?
+          </Button>
+        )}
       </form>
     </Form>
   );

@@ -13,4 +13,5 @@ export type AuthContextType = {
   signInWithGoogle: () => Promise<{ error: AuthError | null }>;
   signOut: () => Promise<void>;
   refreshProfile: () => Promise<void>;
+  requestPasswordReset: (email: string) => Promise<{ error: AuthError | null }>;
 };

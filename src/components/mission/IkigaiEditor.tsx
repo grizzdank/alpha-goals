@@ -15,7 +15,7 @@ interface IkigaiComponentsForm {
 }
 
 export function IkigaiEditor() {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -28,10 +28,24 @@ export function IkigaiEditor() {
 
   useEffect(() => {
     const loadIkigaiComponents = async () => {
-      if (!user?.id) return;
+      console.log('IkigaiEditor: useEffect triggered. AuthLoading:', authLoading, 'User ID:', user?.id);
+
+      if (authLoading) {
+        console.log('IkigaiEditor: AuthProvider is still loading, deferring ikigai load.');
+        return;
+      }
+
+      if (!user?.id) {
+        console.log('IkigaiEditor: Auth loaded but no user ID, exiting loadIkigaiComponents.');
+        setIsLoading(false);
+        return;
+      }
       
+      setIsLoading(true);
+      console.log('IkigaiEditor: Attempting to load ikigai components for user:', user.id);
       try {
         const components = await missionService.getIkigaiComponents(user.id);
+        console.log('IkigaiEditor: Fetched ikigai components:', components);
         if (components) {
           setForm({
             love: components.love,
@@ -48,12 +62,13 @@ export function IkigaiEditor() {
           variant: 'destructive'
         });
       } finally {
+        console.log('IkigaiEditor: loadIkigaiComponents finally block. Setting isLoading to false.');
         setIsLoading(false);
       }
     };
 
     loadIkigaiComponents();
-  }, [user?.id, toast]);
+  }, [user?.id, authLoading, toast]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -1,4 +1,3 @@
-
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/auth';
 
@@ -6,6 +5,8 @@ export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, loading } = useAuth();
   const location = useLocation();
   
+  console.log('ProtectedRoute rendering. Loading:', loading, 'User:', user?.id, 'Path:', location.pathname);
+
   // Show loading spinner while auth state is being determined
   if (loading) {
     return (
